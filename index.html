@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SH Series Quiz — คุณเป็นตัวละครไหน?</title>
+  <title>Star Hunter: Profile — เช็กโปรไฟล์ คุณเป็นสายไหนที่ซ่อนไว้?</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -568,7 +568,7 @@
     document.getElementById('r-name').textContent = char.name;
     document.getElementById('r-series').textContent = char.series;
     const badge = document.getElementById('r-type');
-    badge.textContent = char.type==='me' ? '🎭 เมะ (พระเอก)' : '💫 เคะ (ตัวละครคู่)';
+    badge.textContent = char.type==='me' ? 'เมะ (พระเอก)' : 'เคะ (ตัวละครคู่)';
     badge.className = 'type-badge ' + (char.type==='me' ? 'type-me' : 'type-ke');
     document.getElementById('r-actor').innerHTML = `รับบทโดย <strong>${char.actor}</strong>`;
     document.getElementById('r-desc').textContent = char.desc;
