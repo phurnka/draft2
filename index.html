@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --gold: #e5d192;
       --gold-dim: rgba(229,209,146,0.18);
@@ -21,7 +20,6 @@
       --radius-md: 10px;
       --radius-lg: 16px;
     }
-
     html, body {
       min-height: 100vh;
       font-family: 'Sarabun', sans-serif;
@@ -30,22 +28,18 @@
       font-size: 16px;
       line-height: 1.6;
     }
-
-    /* Gold noise overlay */
     body::before {
       content: '';
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
       opacity: 0.35;
     }
-
     .app {
       position: relative; z-index: 1;
       min-height: 100vh;
       display: flex; align-items: flex-start; justify-content: center;
       padding: 2rem 1rem 5rem;
     }
-
     .container { width: 100%; max-width: 620px; }
 
     /* TOP BAR */
@@ -116,7 +110,6 @@
     }
     .btn-primary:hover { background: var(--gold); color: var(--black); }
     .btn-primary:active { transform: scale(0.98); }
-
     .stat-row {
       display: flex; justify-content: center; gap: 2.5rem;
       margin-top: 2.25rem; padding-top: 2rem;
@@ -188,7 +181,6 @@
     }
     .choice.selected .choice-letter { background: var(--gold); color: var(--black); border-color: var(--gold); }
     .choice-text { flex: 1; line-height: 1.55; padding-top: 2px; }
-
     .btn-next {
       margin-top: 1.5rem; width: 100%;
       background: transparent;
@@ -205,103 +197,175 @@
     .btn-next:hover { background: var(--gold); color: var(--black); }
 
     /* ─── RESULT ─── */
-    .result-header {
-      text-align: center;
-      background: var(--black-card);
-      border: 1px solid var(--gold-border);
-      border-radius: var(--radius-lg);
-      padding: 2rem 1.5rem 1.75rem;
+
+    /* CAROUSEL SECTION */
+    .carousel-section {
       margin-bottom: 1rem;
+      position: relative;
     }
 
-    /* LARGE ROUNDED-RECT AVATAR */
-    .result-avatar {
-      width: 100%;
-      max-width: 280px;
-      aspect-ratio: 3/4;
-      border-radius: 14px;
-      margin: 0 auto 1.25rem;
-      border: 2px solid var(--gold);
+    /* Peek carousel wrapper — clips the overflow but shows side peeks */
+    .carousel-viewport {
       overflow: hidden;
+      /* We'll use padding trick for peek effect */
+      padding: 0 48px;
+      margin: 0 -48px;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 12px;
+      transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+    }
+
+    /* Each card in carousel */
+    .carousel-card {
+      flex: 0 0 calc(100% - 0px);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gold-border);
+      background: var(--black-card);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, opacity 0.3s, transform 0.3s;
+      position: relative;
+    }
+    .carousel-card.inactive {
+      opacity: 0.45;
+      transform: scale(0.95);
+      border-color: rgba(229,209,146,0.15);
+    }
+
+    /* Image inside card */
+    .carousel-img-wrap {
+      width: 100%;
+      aspect-ratio: 3/4;
       background: #1a1a1a;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 32px rgba(229,209,146,0.18);
+      position: relative;
+      overflow: hidden;
     }
-    .result-avatar img {
+    .carousel-img-wrap img {
       width: 100%; height: 100%; object-fit: cover;
+      display: block;
     }
-    .result-avatar .avatar-fallback {
+    .carousel-img-wrap .img-fallback {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
       font-family: 'Cinzel', serif;
       font-size: 56px; font-weight: 700; color: var(--gold);
     }
 
-    .result-e {
-      font-family: 'Cinzel', serif;
-      font-size: 11px; font-weight: 700; color: var(--gold);
-      letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 6px;
+    /* Gold overlay gradient at bottom of image */
+    .carousel-img-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 40%;
+      background: linear-gradient(to top, rgba(0,0,0,0.72), transparent);
+      pointer-events: none;
     }
-    .result-name {
-      font-family: 'Cinzel', serif;
-      font-size: 28px; font-weight: 700; color: var(--white); margin-bottom: 4px;
+
+    /* Name overlay on image */
+    .carousel-name-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 1rem;
+      z-index: 2;
     }
-    .result-series { font-size: 13px; color: var(--white-muted); margin-bottom: 1rem; }
+    .carousel-name-overlay .cn-series {
+      font-size: 11px; color: var(--gold); letter-spacing: 0.1em;
+      font-weight: 600; text-transform: uppercase; margin-bottom: 2px;
+    }
+    .carousel-name-overlay .cn-name {
+      font-family: 'Cinzel', serif;
+      font-size: 22px; font-weight: 700; color: var(--white);
+      line-height: 1.2;
+    }
+
+    /* Dot indicators */
+    .carousel-dots {
+      display: flex; justify-content: center; gap: 6px;
+      margin-top: 1rem;
+    }
+    .carousel-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(229,209,146,0.25);
+      transition: background 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .carousel-dot.active {
+      background: var(--gold);
+      transform: scale(1.3);
+    }
+
+    /* Swipe hint arrows */
+    .carousel-arrows {
+      display: flex; justify-content: space-between;
+      margin-top: 0.75rem; padding: 0 4px;
+    }
+    .carousel-arrow {
+      background: transparent;
+      border: 1px solid var(--gold-border);
+      color: var(--gold);
+      width: 36px; height: 36px; border-radius: 50%;
+      cursor: pointer; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    .carousel-arrow:hover { background: var(--gold-dim); }
+    .carousel-arrow:disabled { opacity: 0.2; cursor: default; }
+
+    /* CHARACTER INFO — updates dynamically */
+    .char-info-card {
+      background: var(--black-card);
+      border: 1px solid var(--gold-border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: opacity 0.2s;
+    }
+    .char-info-card.fading { opacity: 0; }
+
+    .char-info-top {
+      display: flex; align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      gap: 12px;
+    }
+    .char-e-badge {
+      font-family: 'Cinzel', serif;
+      font-size: 10px; font-weight: 700; color: var(--gold);
+      letter-spacing: 0.16em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .char-big-name {
+      font-family: 'Cinzel', serif;
+      font-size: 26px; font-weight: 700; color: var(--white);
+      line-height: 1.2; margin-bottom: 2px;
+    }
+    .char-series-line {
+      font-size: 13px; color: var(--white-muted);
+    }
     .type-badge {
-      display: inline-block; padding: 5px 18px;
-      border-radius: 20px; font-size: 12px; font-weight: 700;
-      letter-spacing: 0.05em; margin-bottom: 1rem;
+      display: inline-block; padding: 5px 14px;
+      border-radius: 20px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.05em; white-space: nowrap; flex-shrink: 0;
     }
     .type-me { background: rgba(229,209,146,0.15); color: var(--gold); border: 1px solid var(--gold-border); }
     .type-ke { background: rgba(255,255,255,0.07); color: var(--white-muted); border: 1px solid rgba(255,255,255,0.2); }
-    .result-actor { font-size: 13px; color: var(--white-muted); }
-    .result-actor strong { color: var(--white); }
 
-    /* Description card */
-    .result-desc-card {
-      background: var(--black-card);
-      border: 1px solid var(--gold-border);
-      border-radius: var(--radius-lg);
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
+    .char-actor-line {
+      font-size: 13px; color: var(--white-muted);
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      margin-top: 0.75rem;
     }
-    .desc-label {
-      font-family: 'Cinzel', serif;
-      font-size: 10px; font-weight: 700; color: var(--gold);
-      letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 0.6rem;
-    }
-    .desc-text { font-size: 15px; color: var(--white); line-height: 1.75; }
+    .char-actor-line strong { color: var(--white); }
 
-    /* All characters in this enneagram */
-    .chars-card {
-      background: var(--black-card);
-      border: 1px solid var(--gold-border);
-      border-radius: var(--radius-lg);
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
+    .char-desc-text {
+      font-size: 15px; color: var(--white); line-height: 1.75;
+      margin-top: 0.75rem;
     }
-    .chars-section-label {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; margin-bottom: 0.6rem;
-    }
-    .chars-section-label.me { color: var(--gold); }
-    .chars-section-label.ke { color: var(--white-muted); }
-    .chars-row {
-      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem;
-    }
-    .char-chip {
-      font-size: 12px; padding: 4px 12px;
-      border-radius: 20px; line-height: 1.4;
-    }
-    .char-chip.me {
-      background: rgba(229,209,146,0.12);
-      border: 1px solid var(--gold-border);
-      color: var(--gold);
-    }
-    .char-chip.ke {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.18);
-      color: var(--white-muted);
-    }
-    .char-chip .chip-series { font-size: 10px; opacity: 0.7; margin-left: 4px; }
 
     /* Scores */
     .scores-card {
@@ -310,6 +374,11 @@
       border-radius: var(--radius-lg);
       padding: 1.25rem 1.5rem;
       margin-bottom: 1.5rem;
+    }
+    .desc-label {
+      font-family: 'Cinzel', serif;
+      font-size: 10px; font-weight: 700; color: var(--gold);
+      letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 0.6rem;
     }
     .scores-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 0.75rem; }
     .score-item { font-size: 13px; color: var(--white-muted); }
@@ -349,7 +418,7 @@
       .q-card { padding: 1.5rem; }
       .q-text { font-size: 17px; }
       .stat-row { gap: 1.5rem; }
-      .result-avatar { max-width: 220px; }
+      .carousel-viewport { padding: 0 36px; margin: 0 -36px; }
     }
   </style>
 </head>
@@ -365,7 +434,7 @@
     <div class="screen active" id="screen-start">
       <div class="start-hero">
         <div class="start-eyebrow">Character Quiz</div>
-        <h1 class="start-title">Star Hunter:<em>Profile</em>—</em>เช็กโปรไฟล์<br>คุณเป็นสายไหนที่ซ่อนไว้?</h1>
+        <h1 class="start-title">Star Hunter:<em>Profile</em>—เช็กโปรไฟล์<br>คุณเป็นสายไหนที่ซ่อนไว้?</h1>
         <div class="start-divider"></div>
         <p class="start-sub">ตอบ 7 คำถามสั้นๆ แล้วค้นหาว่าคุณมีบุคลิกตรงกับตัวละครใด ตามระบบนพลักษณ์ทั้ง 9 แบบ</p>
         <div class="series-grid">
@@ -411,27 +480,34 @@
 
     <!-- RESULT SCREEN -->
     <div class="screen" id="screen-result">
-      <div class="result-header">
-        <div class="result-avatar" id="r-avatar"><span class="avatar-fallback">?</span></div>
-        <div class="result-e" id="r-e"></div>
-        <h2 class="result-name" id="r-name"></h2>
-        <p class="result-series" id="r-series"></p>
-        <span class="type-badge" id="r-type"></span>
-        <p class="result-actor" id="r-actor"></p>
+
+      <!-- CAROUSEL -->
+      <div class="carousel-section">
+        <div class="carousel-viewport">
+          <div class="carousel-track" id="carousel-track"></div>
+        </div>
+        <div class="carousel-arrows">
+          <button class="carousel-arrow" id="arrow-prev" onclick="carouselPrev()" aria-label="ก่อนหน้า">&#8592;</button>
+          <div class="carousel-dots" id="carousel-dots"></div>
+          <button class="carousel-arrow" id="arrow-next" onclick="carouselNext()" aria-label="ถัดไป">&#8594;</button>
+        </div>
       </div>
 
-      <div class="result-desc-card">
-        <div class="desc-label">บุคลิกของคุณ</div>
-        <p class="desc-text" id="r-desc"></p>
+      <!-- CHARACTER INFO (updates with carousel) -->
+      <div class="char-info-card" id="char-info-card">
+        <div class="char-info-top">
+          <div>
+            <div class="char-e-badge" id="ci-e"></div>
+            <div class="char-big-name" id="ci-name"></div>
+            <div class="char-series-line" id="ci-series"></div>
+          </div>
+          <span class="type-badge" id="ci-type"></span>
+        </div>
+        <p class="char-desc-text" id="ci-desc"></p>
+        <div class="char-actor-line" id="ci-actor"></div>
       </div>
 
-      <div class="chars-card" id="r-chars-card">
-        <div class="desc-label">ตัวละครนพลักษณ์นี้ทั้งหมด</div>
-        <div class="gold-divider" style="margin: 0.6rem 0 0.75rem;"></div>
-        <div id="r-chars-me"></div>
-        <div id="r-chars-ke"></div>
-      </div>
-
+      <!-- SCORES -->
       <div class="scores-card">
         <div class="desc-label">คะแนนนพลักษณ์ (Top 4)</div>
         <div class="scores-grid" id="r-scores"></div>
@@ -447,103 +523,84 @@
 </div>
 
 <script>
-
   const CHARACTERS = [
-    { enneagram:1, type:'ke', name:'กิจ', series:'GEN Y THE SERIES', actor:'คอปเตอร์ ภานุวัฒน์', desc:'แสวงหาความสมบูรณ์แบบ มีกฎระเบียบอยู่เสมอ จะวิจารณ์สิ่งต่างๆ อย่างตรงไปตรงมา', img: 'IMG_4507.JPG' },
-    { enneagram:2, type:'ke', name:'ซัน', series:'ตะวันระฟ้า', actor:'เมอซีเดส สิรภัทร', desc:'ชอบช่วยเหลือคนอื่น ให้ความสำคัญกับความสัมพันธ์ เห็นแก่ผู้อื่นมากกว่าตัวเอง', img: 'ซัน.JPG' },
-    { enneagram:2, type:'ke', name:'ปุ่น', series:'รักวุ่นวาย นายรสแซ่บ', actor:'ปีเตอร์ ชลพัชร', desc:'ชอบช่วยเหลือคนอื่น ให้ความสำคัญกับความสัมพันธ์ เห็นแก่ผู้อื่นมากกว่าตัวเอง', img: 'IMG_4500.JPG' },
-    { enneagram:2, type:'ke', name:'วายุ', series:'GEN Y THE SERIES', actor:'บาส สุรเดช', desc:'ชอบช่วยเหลือคนอื่น ให้ความสำคัญกับความสัมพันธ์ เห็นแก่ผู้อื่นมากกว่าตัวเอง', img: 'IMG_4508.JPG' },
-    { enneagram:3, type:'me', name:'เฟื่องนคร/พี่เฟื่อง', series:'เฟื่องนคร', actor:'จ๊อบ กฤษ', desc:'ต้องการประสบความสำเร็จ มีเป้าหมายและต้องไปให้ถึง ชอบการแข่งขัน ให้ความสำคัญกับภาพลักษณ์', img: 'IMG_4495.JPG' },
-    { enneagram:3, type:'ke', name:'ใหญ่', series:'มังกรกินใหญ่', actor:'แบงค์ มณฑป', desc:'ต้องการประสบความสำเร็จ มีเป้าหมายและต้องไปให้ถึง ชอบการแข่งขัน ให้ความสำคัญกับภาพลักษณ์', img: 'IMG_4497.JPG' },
-    { enneagram:4, type:'me', name:'พระเอก', series:'รักรสนมจืด', actor:'ภู ภูรินท์', desc:'คนที่มีอารมณ์หลากหลายโดยเฉพาะอารมณ์เศร้า ไม่ค่อยพอใจในสิ่งที่มี อารมณ์เปลี่ยนแปลงง่าย', img: 'ภูรินทร์ใล.JPG' },
-    { enneagram:4, type:'me', name:'หมอก', series:'THE MOMENT... I NEED YOU', actor:'แบงค์ ธนาธิป', desc:'คนที่มีอารมณ์หลากหลายโดยเฉพาะอารมณ์เศร้า ไม่ค่อยพอใจในสิ่งที่มี อารมณ์เปลี่ยนแปลงง่าย', img: 'IMG_4512.JPG' },
-    { enneagram:4, type:'ke', name:'นาม', series:'Remain', actor:'ลูกแก้ว กมลลักษณ์', desc:'คนที่มีอารมณ์หลากหลายโดยเฉพาะอารมณ์เศร้า ไม่ค่อยพอใจในสิ่งที่มี อารมณ์เปลี่ยนแปลงง่าย', img: 'IMG_4519.JPG' },
-    { enneagram:5, type:'me', name:'ธนู', series:'GEN Y THE SERIES', actor:'ดุล ร่มจำปา', desc:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', img: 'IMG_4506.JPG' },
-    { enneagram:5, type:'me', name:'ไทม์', series:'Timezone', actor:'', desc:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', img: 'time.JPG' },
-    { enneagram:5, type:'me', name:'ริว', series:'MY MATE MATCH', actor:'บิ๊ก ธนกร', desc:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', img: 'IMG_4502.JPG' },
-    { enneagram:5, type:'ke', name:'นมจืด', series:'รักรสนมจืด', actor:'นีล กวิศวร์', desc:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', img: 'นีล.JPG' },
-    { enneagram:5, type:'ke', name:'แม่ครูบุหลัน', series:'ข่มขลัง', actor:'บิ๊นท์ สิรีธร', desc:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', img: '111.jpg' },
-    { enneagram:6, type:'me', name:'หมวดภีม', series:'ข่มขลัง', actor:'ปุยนุ่น วรางค์ศิริ', desc:'คนที่มีคำถามกับสิ่งรอบตัว กล้าได้กล้าเสีย เตรียมตัวพร้อมรับมือกับสิ่งที่อาจคุกคามได้ตลอดเวลา', img: '222.jpg'},
-    { enneagram:7, type:'me', name:'มะนาว', series:'พี่ว๊ากคะ รักหนูได้ไหม', actor:'อันดา อนันตา', desc:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', img: 'มะนาว.JPG' },
-    { enneagram:7, type:'me', name:'มิกซ์', series:'MY MATE MATCH', actor:'เจมส์ กษม', desc:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', img: 'IMG_4501.JPG' },
-    { enneagram:7, type:'me', name:'มาร์ค', series:'GEN Y THE SERIES', actor:'คิมม่อน วโรดม', desc:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', img: 'IMG_4509.JPG' },
-    { enneagram:7, type:'ke', name:'เบ', series:'THE MOMENT... I NEED YOU', actor:'ภณ ธนภณ', desc:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', img: 'IMG_4513.JPG' },
-    { enneagram:7, type:'ke', name:'โซน', series:'Timezone', actor:'อามัส พีรวัส', desc:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', img: 'IMG_4520.JPG' },
-    { enneagram:8, type:'me', name:'ระฟ้า/พี่ฟรินท์', series:'ตะวันระฟ้า', actor:'อะตอม อภิชญา', desc:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', img: 'ระฟ้า.JPG' },
-    { enneagram:8, type:'me', name:'ซัน', series:'เพียงชลาลัย', actor:'มอส ภาณุวัฒน์', desc:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', img: 'IMG_4493.JPG' },
-    { enneagram:8, type:'me', name:'มังกร', series:'มังกรกินใหญ่', actor:'มอส ภาณุวัฒน์', desc:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', img: 'IMG_4498.JPG' },
-    { enneagram:8, type:'me', name:'อธิป', series:'รักวุ่นวาย นายรสแซ่บ', actor:'บอส ธวัชนินทร์', desc:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', img: 'IMG_4499.JPG' },
-    { enneagram:8, type:'ke', name:'เกี๊ยวซ่า', series:'พี่ว๊ากคะ รักหนูได้ไหม', actor:'ลูกแก้ว กมลลักษณ์', desc:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', img: 'ลูกแก้ว.JPG' },
-    { enneagram:9, type:'me', name:'เต', series:'Remain', actor:'อันดา อนันตา', desc:'ชอบความสงบ สามัคคี ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง', img: 'IMG_4518.JPG' },
-    { enneagram:9, type:'ke', name:'สลิน/หนูลิน', series:'เพียงชลาลัย', actor:'แบงค์ มณฑป', desc:'ชอบความสงบ สามัคคี ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง', img: 'IMG_4494.JPG' },
-    { enneagram:9, type:'ke', name:'กรม/กรมท่า', series:'เฟื่องนคร', actor:'พอร์ช ศิฑา', desc:'ชอบความสงบ สามัคคี ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง', img: 'IMG_4496.JPG' },
-    { enneagram:9, type:'ke', name:'แมทช์', series:'MY MATE MATCH', actor:'เจ็ท เจษฎากร', desc:'ชอบความสงบ สามัคคี ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง', img: 'IMG_4503.JPG' },
+    { enneagram:1, type:'ke', name:'กิจ', series:'GEN Y THE SERIES', actor:'คอปเตอร์ ภานุวัฒน์', desc:'แสวงหาความสมบูรณ์แบบ มีกฎระเบียบอยู่เสมอ จะวิจารณ์สิ่งต่างๆ อย่างตรงไปตรงมา', img:'IMG_4507.JPG' },
+    { enneagram:2, type:'ke', name:'ซัน', series:'ตะวันระฟ้า', actor:'เมอซีเดส สิรภัทร', desc:'ชอบช่วยเหลือคนอื่น ให้ความสำคัญกับความสัมพันธ์ เห็นแก่ผู้อื่นมากกว่าตัวเอง', img:'ซัน.JPG' },
+    { enneagram:2, type:'ke', name:'ปุ่น', series:'รักวุ่นวาย นายรสแซ่บ', actor:'ปีเตอร์ ชลพัชร', desc:'ชอบช่วยเหลือคนอื่น ให้ความสำคัญกับความสัมพันธ์ เห็นแก่ผู้อื่นมากกว่าตัวเอง', img:'IMG_4500.JPG' },
+    { enneagram:2, type:'ke', name:'วายุ', series:'GEN Y THE SERIES', actor:'บาส สุรเดช', desc:'ชอบช่วยเหลือคนอื่น ให้ความสำคัญกับความสัมพันธ์ เห็นแก่ผู้อื่นมากกว่าตัวเอง', img:'IMG_4508.JPG' },
+    { enneagram:3, type:'me', name:'เฟื่องนคร/พี่เฟื่อง', series:'เฟื่องนคร', actor:'จ๊อบ กฤษ', desc:'ต้องการประสบความสำเร็จ มีเป้าหมายและต้องไปให้ถึง ชอบการแข่งขัน ให้ความสำคัญกับภาพลักษณ์', img:'IMG_4495.JPG' },
+    { enneagram:3, type:'ke', name:'ใหญ่', series:'มังกรกินใหญ่', actor:'แบงค์ มณฑป', desc:'ต้องการประสบความสำเร็จ มีเป้าหมายและต้องไปให้ถึง ชอบการแข่งขัน ให้ความสำคัญกับภาพลักษณ์', img:'IMG_4497.JPG' },
+    { enneagram:4, type:'me', name:'พระเอก', series:'รักรสนมจืด', actor:'ภู ภูรินท์', desc:'คนที่มีอารมณ์หลากหลายโดยเฉพาะอารมณ์เศร้า ไม่ค่อยพอใจในสิ่งที่มี อารมณ์เปลี่ยนแปลงง่าย', img:'ภูรินทร์ใล.JPG' },
+    { enneagram:4, type:'me', name:'หมอก', series:'THE MOMENT... I NEED YOU', actor:'แบงค์ ธนาธิป', desc:'คนที่มีอารมณ์หลากหลายโดยเฉพาะอารมณ์เศร้า ไม่ค่อยพอใจในสิ่งที่มี อารมณ์เปลี่ยนแปลงง่าย', img:'IMG_4512.JPG' },
+    { enneagram:4, type:'ke', name:'นาม', series:'Remain', actor:'ลูกแก้ว กมลลักษณ์', desc:'คนที่มีอารมณ์หลากหลายโดยเฉพาะอารมณ์เศร้า ไม่ค่อยพอใจในสิ่งที่มี อารมณ์เปลี่ยนแปลงง่าย', img:'IMG_4519.JPG' },
+    { enneagram:5, type:'me', name:'ธนู', series:'GEN Y THE SERIES', actor:'ดุล ร่มจำปา', desc:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', img:'IMG_4506.JPG' },
+    { enneagram:5, type:'me', name:'ไทม์', series:'Timezone', actor:'', desc:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', img:'time.JPG' },
+    { enneagram:5, type:'me', name:'ริว', series:'MY MATE MATCH', actor:'บิ๊ก ธนกร', desc:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', img:'IMG_4502.JPG' },
+    { enneagram:5, type:'ke', name:'นมจืด', series:'รักรสนมจืด', actor:'นีล กวิศวร์', desc:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', img:'นีล.JPG' },
+    { enneagram:5, type:'ke', name:'แม่ครูบุหลัน', series:'ข่มขลัง', actor:'บิ๊นท์ สิรีธร', desc:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', img:'111.jpg' },
+    { enneagram:6, type:'me', name:'หมวดภีม', series:'ข่มขลัง', actor:'ปุยนุ่น วรางค์ศิริ', desc:'คนที่มีคำถามกับสิ่งรอบตัว กล้าได้กล้าเสีย เตรียมตัวพร้อมรับมือกับสิ่งที่อาจคุกคามได้ตลอดเวลา', img:'222.jpg' },
+    { enneagram:7, type:'me', name:'มะนาว', series:'พี่ว๊ากคะ รักหนูได้ไหม', actor:'อันดา อนันตา', desc:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', img:'มะนาว.JPG' },
+    { enneagram:7, type:'me', name:'มิกซ์', series:'MY MATE MATCH', actor:'เจมส์ กษม', desc:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', img:'IMG_4501.JPG' },
+    { enneagram:7, type:'me', name:'มาร์ค', series:'GEN Y THE SERIES', actor:'คิมม่อน วโรดม', desc:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', img:'IMG_4509.JPG' },
+    { enneagram:7, type:'ke', name:'เบ', series:'THE MOMENT... I NEED YOU', actor:'ภณ ธนภณ', desc:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', img:'IMG_4513.JPG' },
+    { enneagram:7, type:'ke', name:'โซน', series:'Timezone', actor:'อามัส พีรวัส', desc:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', img:'IMG_4520.JPG' },
+    { enneagram:8, type:'me', name:'ระฟ้า/พี่ฟรินท์', series:'ตะวันระฟ้า', actor:'อะตอม อภิชญา', desc:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', img:'ระฟ้า.JPG' },
+    { enneagram:8, type:'me', name:'ซัน', series:'เพียงชลาลัย', actor:'มอส ภาณุวัฒน์', desc:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', img:'IMG_4493.JPG' },
+    { enneagram:8, type:'me', name:'มังกร', series:'มังกรกินใหญ่', actor:'มอส ภาณุวัฒน์', desc:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', img:'IMG_4498.JPG' },
+    { enneagram:8, type:'me', name:'อธิป', series:'รักวุ่นวาย นายรสแซ่บ', actor:'บอส ธวัชนินทร์', desc:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', img:'IMG_4499.JPG' },
+    { enneagram:8, type:'ke', name:'เกี๊ยวซ่า', series:'พี่ว๊ากคะ รักหนูได้ไหม', actor:'ลูกแก้ว กมลลักษณ์', desc:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', img:'ลูกแก้ว.JPG' },
+    { enneagram:9, type:'me', name:'เต', series:'Remain', actor:'อันดา อนันตา', desc:'ชอบความสงบ สามัคคี ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง', img:'IMG_4518.JPG' },
+    { enneagram:9, type:'ke', name:'สลิน/หนูลิน', series:'เพียงชลาลัย', actor:'แบงค์ มณฑป', desc:'ชอบความสงบ สามัคคี ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง', img:'IMG_4494.JPG' },
+    { enneagram:9, type:'ke', name:'กรม/กรมท่า', series:'เฟื่องนคร', actor:'พอร์ช ศิฑา', desc:'ชอบความสงบ สามัคคี ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง', img:'IMG_4496.JPG' },
+    { enneagram:9, type:'ke', name:'แมทช์', series:'MY MATE MATCH', actor:'เจ็ท เจษฎากร', desc:'ชอบความสงบ สามัคคี ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง', img:'IMG_4503.JPG' },
   ];
 
-  // 7 questions, 3 choices each — relaxed casual tone
   const QUESTIONS = [
-    {
-      text: "ตอนที่ต้องเผชิญปัญหาหรือสิ่งยากๆ คุณมักจะทำอะไรก่อนเลย?",
-      choices: [
-        { text: "นั่งคิดคนเดียวก่อน แยกแยะให้ชัดแล้วค่อยทำ", scores: {5:3,1:1} },
-        { text: "ลุยเลย ไม่รอ จัดการได้ก็จัดการ", scores: {8:3,3:1} },
-        { text: "ชวนเพื่อนคุย ฟังความเห็น แล้วค่อยตัดสินใจ", scores: {2:3,9:1} },
-      ]
-    },
-    {
-      text: "วันที่รู้สึกเหนื่อยมากๆ คุณอยากทำอะไรมากที่สุด?",
-      choices: [
-        { text: "หาที่เงียบๆ อยู่คนเดียว ฟังเพลง ไม่คุยกับใคร", scores: {5:3,4:1} },
-        { text: "โทรหาเพื่อน ออกไปข้างนอก เปลี่ยนบรรยากาศ", scores: {7:3,2:1} },
-        { text: "จัดระเบียบของรอบตัว ทำให้รู้สึกคุมได้บ้าง", scores: {8:2,1:2} },
-      ]
-    },
-    {
-      text: "ในความสัมพันธ์ สิ่งที่คุณให้ค่ามากที่สุดคืออะไร?",
-      choices: [
-        { text: "ความสงบ ไม่มีเรื่องบาดหมางกัน", scores: {9:3,2:1} },
-        { text: "ความจริงใจ ตรงไปตรงมา ไม่แกล้งทำ", scores: {1:3,8:1} },
-        { text: "รู้สึกว่าตัวเองมีคุณค่า และเขาต้องการเรา", scores: {2:3,4:1} },
-      ]
-    },
-    {
-      text: "ถ้าให้เพื่อนบอกว่าคุณเป็นคนแบบไหน คิดว่าเขาจะพูดว่าอะไร?",
-      choices: [
-        { text: "ร่าเริง คิดบวก พาบรรยากาศได้เสมอ", scores: {7:3,2:1} },
-        { text: "เก็บตัว แต่ฉลาดมาก ลึกกว่าที่เห็น", scores: {5:3,9:1} },
-        { text: "อ่อนไหว ซึ้งง่าย รู้สึกอะไรลึกมาก", scores: {4:3,6:1} },
-      ]
-    },
-    {
-      text: "สิ่งที่คุณกลัวมากที่สุดในชีวิตคืออะไร?",
-      choices: [
-        { text: "ล้มเหลวต่อหน้าคนอื่น หรือดูไม่เก่งในสายตาคนอื่น", scores: {3:3,1:1} },
-        { text: "ถูกควบคุม สูญเสียอิสระ ทำตามใครไม่ได้", scores: {8:3,5:1} },
-        { text: "ชีวิตซ้ำซากจำเจ หรือโดดเดี่ยวโดยไม่มีใคร", scores: {7:2,2:2} },
-      ]
-    },
-    {
-      text: "เวลาอยากแสดงให้คนที่แคร์รู้ว่าคุณห่วงใยเขา คุณทำยังไง?",
-      choices: [
-        { text: "ลงมือช่วยทันทีโดยไม่ต้องรอให้เขาขอ", scores: {2:3,8:1} },
-        { text: "รับฟัง นั่งอยู่ด้วย ไม่ตัดสิน", scores: {9:3,4:1} },
-        { text: "แชร์ข้อมูลหรือแนวทางที่เป็นประโยชน์ให้", scores: {5:3,1:1} },
-      ]
-    },
-    {
-      text: "ถ้ามีคนเห็นไม่ตรงกับคุณแล้วพูดออกมาตรงๆ คุณจะรู้สึกยังไง?",
-      choices: [
-        { text: "ยืนจุดของตัวเอง ถ้ามั่นใจก็ไม่ถอย", scores: {8:3,1:1} },
-        { text: "ลองฟังก่อน พยายามเข้าใจว่าเขามองจากมุมไหน", scores: {9:3,2:1} },
-        { text: "รู้สึกอึดอัดในใจ แต่ไม่แสดงออกมา", scores: {6:3,4:1} },
-      ]
-    },
+    { text:"ตอนที่ต้องเผชิญปัญหาหรือสิ่งยากๆ คุณมักจะทำอะไรก่อนเลย?", choices:[
+      { text:"นั่งคิดคนเดียวก่อน แยกแยะให้ชัดแล้วค่อยทำ", scores:{5:3,1:1} },
+      { text:"ลุยเลย ไม่รอ จัดการได้ก็จัดการ", scores:{8:3,3:1} },
+      { text:"ชวนเพื่อนคุย ฟังความเห็น แล้วค่อยตัดสินใจ", scores:{2:3,9:1} },
+    ]},
+    { text:"วันที่รู้สึกเหนื่อยมากๆ คุณอยากทำอะไรมากที่สุด?", choices:[
+      { text:"หาที่เงียบๆ อยู่คนเดียว ฟังเพลง ไม่คุยกับใคร", scores:{5:3,4:1} },
+      { text:"โทรหาเพื่อน ออกไปข้างนอก เปลี่ยนบรรยากาศ", scores:{7:3,2:1} },
+      { text:"จัดระเบียบของรอบตัว ทำให้รู้สึกคุมได้บ้าง", scores:{8:2,1:2} },
+    ]},
+    { text:"ในความสัมพันธ์ สิ่งที่คุณให้ค่ามากที่สุดคืออะไร?", choices:[
+      { text:"ความสงบ ไม่มีเรื่องบาดหมางกัน", scores:{9:3,2:1} },
+      { text:"ความจริงใจ ตรงไปตรงมา ไม่แกล้งทำ", scores:{1:3,8:1} },
+      { text:"รู้สึกว่าตัวเองมีคุณค่า และเขาต้องการเรา", scores:{2:3,4:1} },
+    ]},
+    { text:"ถ้าให้เพื่อนบอกว่าคุณเป็นคนแบบไหน คิดว่าเขาจะพูดว่าอะไร?", choices:[
+      { text:"ร่าเริง คิดบวก พาบรรยากาศได้เสมอ", scores:{7:3,2:1} },
+      { text:"เก็บตัว แต่ฉลาดมาก ลึกกว่าที่เห็น", scores:{5:3,9:1} },
+      { text:"อ่อนไหว ซึ้งง่าย รู้สึกอะไรลึกมาก", scores:{4:3,6:1} },
+    ]},
+    { text:"สิ่งที่คุณกลัวมากที่สุดในชีวิตคืออะไร?", choices:[
+      { text:"ล้มเหลวต่อหน้าคนอื่น หรือดูไม่เก่งในสายตาคนอื่น", scores:{3:3,1:1} },
+      { text:"ถูกควบคุม สูญเสียอิสระ ทำตามใครไม่ได้", scores:{8:3,5:1} },
+      { text:"ชีวิตซ้ำซากจำเจ หรือโดดเดี่ยวโดยไม่มีใคร", scores:{7:2,2:2} },
+    ]},
+    { text:"เวลาอยากแสดงให้คนที่แคร์รู้ว่าคุณห่วงใยเขา คุณทำยังไง?", choices:[
+      { text:"ลงมือช่วยทันทีโดยไม่ต้องรอให้เขาขอ", scores:{2:3,8:1} },
+      { text:"รับฟัง นั่งอยู่ด้วย ไม่ตัดสิน", scores:{9:3,4:1} },
+      { text:"แชร์ข้อมูลหรือแนวทางที่เป็นประโยชน์ให้", scores:{5:3,1:1} },
+    ]},
+    { text:"ถ้ามีคนเห็นไม่ตรงกับคุณแล้วพูดออกมาตรงๆ คุณจะรู้สึกยังไง?", choices:[
+      { text:"ยืนจุดของตัวเอง ถ้ามั่นใจก็ไม่ถอย", scores:{8:3,1:1} },
+      { text:"ลองฟังก่อน พยายามเข้าใจว่าเขามองจากมุมไหน", scores:{9:3,2:1} },
+      { text:"รู้สึกอึดอัดในใจ แต่ไม่แสดงออกมา", scores:{6:3,4:1} },
+    ]},
   ];
 
   const LETTERS = ['A','B','C'];
   const E_NAMES = {1:'นักสมบูรณ์แบบ',2:'ผู้ให้',3:'นักสำเร็จ',4:'นักโรแมนติก',5:'นักสังเกต',6:'ผู้ภักดี',7:'นักผจญภัย',8:'ผู้ท้าทาย',9:'ผู้สงบ'};
 
   let currentQ = 0, selectedChoice = null, scores = {}, lastResult = null;
+  let carouselChars = [], carouselIdx = 0;
+
+  // Touch/swipe state
+  let touchStartX = 0, touchStartY = 0, isDragging = false;
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -568,7 +625,6 @@
     document.getElementById('q-text').textContent = q.text;
     selectedChoice = null;
     document.getElementById('btn-next').classList.remove('visible');
-
     const el = document.getElementById('choices');
     el.innerHTML = '';
     q.choices.forEach((c,i) => {
@@ -598,46 +654,18 @@
 
   function showResult() {
     const topE = parseInt(Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0]);
-    const pool = CHARACTERS.filter(c=>c.enneagram===topE);
-    // Pick a random character as "match"
-    const char = pool[Math.floor(Math.random()*pool.length)];
-    lastResult = char;
+    carouselChars = CHARACTERS.filter(c => c.enneagram === topE);
 
-    // Avatar
-    const avatarEl = document.getElementById('r-avatar');
-    if (char.img) {
-      avatarEl.innerHTML = `<img src="${char.img}" alt="${char.name}" onerror="this.parentElement.innerHTML='<span class=\\'avatar-fallback\\'>${char.name[0]}</span>'">`;
-    } else {
-      avatarEl.innerHTML = `<span class="avatar-fallback">${char.name[0]}</span>`;
-    }
+    // Put the "matched" type first (random pick from same enneagram)
+    const matchedIdx = Math.floor(Math.random() * carouselChars.length);
+    // Reorder: matched first
+    const matched = carouselChars.splice(matchedIdx, 1)[0];
+    carouselChars.unshift(matched);
+    lastResult = matched;
 
-    document.getElementById('r-e').textContent = `นพลักษณ์ ${char.enneagram} — ${E_NAMES[char.enneagram]}`;
-    document.getElementById('r-name').textContent = char.name;
-    document.getElementById('r-series').textContent = char.series;
-
-    const badge = document.getElementById('r-type');
-    badge.textContent = char.type==='me' ? 'พระเอก (เมะ)' : 'ตัวละครคู่ (เคะ)';
-    badge.className = 'type-badge ' + (char.type==='me' ? 'type-me' : 'type-ke');
-
-    document.getElementById('r-actor').innerHTML = char.actor ? `รับบทโดย <strong>${char.actor}</strong>` : '';
-    document.getElementById('r-desc').textContent = char.desc;
-
-    // Group all same-enneagram characters by type
-    const meChars = CHARACTERS.filter(c=>c.enneagram===topE && c.type==='me');
-    const keChars = CHARACTERS.filter(c=>c.enneagram===topE && c.type==='ke');
-
-    const meEl = document.getElementById('r-chars-me');
-    const keEl = document.getElementById('r-chars-ke');
-
-    if (meChars.length) {
-      meEl.innerHTML = `<div class="chars-section-label me">พระเอก (เมะ)</div>
-        <div class="chars-row">${meChars.map(c=>`<span class="char-chip me">${c.name}<span class="chip-series">${c.series}</span></span>`).join('')}</div>`;
-    } else { meEl.innerHTML = ''; }
-
-    if (keChars.length) {
-      keEl.innerHTML = `<div class="chars-section-label ke">ตัวละครคู่ (เคะ)</div>
-        <div class="chars-row">${keChars.map(c=>`<span class="char-chip ke">${c.name}<span class="chip-series">${c.series}</span></span>`).join('')}</div>`;
-    } else { keEl.innerHTML = ''; }
+    carouselIdx = 0;
+    buildCarousel();
+    updateCharInfo(carouselIdx, false);
 
     // Top 4 scores
     const top4 = Object.entries(scores).sort((a,b)=>b[1]-a[1]).slice(0,4);
@@ -646,6 +674,158 @@
     ).join('');
 
     showScreen('screen-result');
+  }
+
+  function buildCarousel() {
+    const track = document.getElementById('carousel-track');
+    track.innerHTML = '';
+
+    carouselChars.forEach((char, i) => {
+      const card = document.createElement('div');
+      card.className = 'carousel-card' + (i !== 0 ? ' inactive' : '');
+      card.dataset.idx = i;
+
+      let imgContent;
+      if(char.img) {
+        imgContent = `<img src="${char.img}" alt="${char.name}" onerror="this.parentElement.innerHTML='<div class=\\'img-fallback\\'>${char.name[0]}</div>'">`;
+      } else {
+        imgContent = `<div class="img-fallback">${char.name[0]}</div>`;
+      }
+
+      card.innerHTML = `
+        <div class="carousel-img-wrap">
+          ${imgContent}
+          <div class="carousel-name-overlay">
+            <div class="cn-series">${char.series}</div>
+            <div class="cn-name">${char.name}</div>
+          </div>
+        </div>
+      `;
+      card.onclick = () => goToSlide(i);
+      track.appendChild(card);
+    });
+
+    // Build dots
+    const dotsEl = document.getElementById('carousel-dots');
+    dotsEl.innerHTML = '';
+    if(carouselChars.length > 1) {
+      carouselChars.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.className = 'carousel-dot' + (i===0 ? ' active' : '');
+        dot.onclick = () => goToSlide(i);
+        dotsEl.appendChild(dot);
+      });
+    }
+
+    // Setup touch/swipe
+    const viewport = document.querySelector('.carousel-viewport');
+    viewport.addEventListener('touchstart', onTouchStart, {passive:true});
+    viewport.addEventListener('touchmove', onTouchMove, {passive:true});
+    viewport.addEventListener('touchend', onTouchEnd);
+
+    updateCarouselPosition(false);
+    updateArrows();
+  }
+
+  function getCardWidth() {
+    const track = document.getElementById('carousel-track');
+    const card = track.querySelector('.carousel-card');
+    if(!card) return 300;
+    return card.offsetWidth + 12; // card width + gap
+  }
+
+  function updateCarouselPosition(animated) {
+    const track = document.getElementById('carousel-track');
+    if(!animated) track.style.transition = 'none';
+    else track.style.transition = 'transform 0.38s cubic-bezier(0.4, 0, 0.2, 1)';
+    const offset = carouselIdx * getCardWidth();
+    track.style.transform = `translateX(-${offset}px)`;
+    // Restore transition after instant set
+    if(!animated) requestAnimationFrame(() => { track.style.transition = ''; });
+
+    // Update active/inactive states
+    document.querySelectorAll('.carousel-card').forEach((c, i) => {
+      c.classList.toggle('inactive', i !== carouselIdx);
+    });
+
+    // Update dots
+    document.querySelectorAll('.carousel-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === carouselIdx);
+    });
+  }
+
+  function updateArrows() {
+    const prev = document.getElementById('arrow-prev');
+    const next = document.getElementById('arrow-next');
+    if(carouselChars.length <= 1) {
+      prev.style.visibility = 'hidden';
+      next.style.visibility = 'hidden';
+    } else {
+      prev.style.visibility = '';
+      next.style.visibility = '';
+      prev.disabled = carouselIdx === 0;
+      next.disabled = carouselIdx === carouselChars.length - 1;
+    }
+  }
+
+  function goToSlide(idx) {
+    if(idx < 0 || idx >= carouselChars.length) return;
+    carouselIdx = idx;
+    updateCarouselPosition(true);
+    updateArrows();
+    updateCharInfo(idx, true);
+  }
+
+  function carouselPrev() { goToSlide(carouselIdx - 1); }
+  function carouselNext() { goToSlide(carouselIdx + 1); }
+
+  function updateCharInfo(idx, animated) {
+    const char = carouselChars[idx];
+    const card = document.getElementById('char-info-card');
+
+    const doUpdate = () => {
+      const topE = char.enneagram;
+      document.getElementById('ci-e').textContent = `นพลักษณ์ ${topE} — ${E_NAMES[topE]}`;
+      document.getElementById('ci-name').textContent = char.name;
+      document.getElementById('ci-series').textContent = char.series;
+
+      const typeBadge = document.getElementById('ci-type');
+      typeBadge.textContent = char.type === 'me' ? 'พระเอก (เมะ)' : 'ตัวละครคู่ (เคะ)';
+      typeBadge.className = 'type-badge ' + (char.type === 'me' ? 'type-me' : 'type-ke');
+
+      document.getElementById('ci-desc').textContent = char.desc;
+      const actorEl = document.getElementById('ci-actor');
+      actorEl.innerHTML = char.actor ? `รับบทโดย <strong>${char.actor}</strong>` : '';
+      actorEl.style.display = char.actor ? '' : 'none';
+    };
+
+    if(animated) {
+      card.classList.add('fading');
+      setTimeout(() => {
+        doUpdate();
+        card.classList.remove('fading');
+      }, 180);
+    } else {
+      doUpdate();
+    }
+  }
+
+  // Touch swipe
+  function onTouchStart(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    isDragging = true;
+  }
+  function onTouchMove(e) {}
+  function onTouchEnd(e) {
+    if(!isDragging) return;
+    isDragging = false;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      if(dx < 0) carouselNext();
+      else carouselPrev();
+    }
   }
 
   function restartQuiz() { showScreen('screen-start'); }
