@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -42,6 +43,25 @@
     }
     .container { width: 100%; max-width: 620px; }
 
+    /* WATERMARK FOOTER */
+    .watermark-footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      text-align: center;
+      padding: 8px 0 10px;
+      pointer-events: none;
+      background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+    }
+    .watermark-footer span {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.22);
+      text-transform: uppercase;
+    }
+
     /* TOP BAR */
     .top-bar {
       display: flex; align-items: center; justify-content: space-between;
@@ -51,7 +71,6 @@
     .logo-small {
       display: flex; align-items: center; gap: 8px;
     }
-    /* Logo: NO filter — show original colors */
     .logo-small img {
       height: 32px; width: auto; object-fit: contain;
     }
@@ -89,7 +108,6 @@
     /* START */
     .start-hero { text-align: center; padding: 1rem 0 2.5rem; }
 
-    /* Logo large on start screen — original colors, no filter */
     .start-logo-wrap {
       display: flex; justify-content: center; margin-bottom: 1rem;
     }
@@ -451,6 +469,12 @@
   </style>
 </head>
 <body>
+
+<!-- WATERMARK FOOTER — fixed, shown on all screens -->
+<div class="watermark-footer">
+  <span>Created by Raya &amp; Phurn Studio</span>
+</div>
+
 <div class="app">
   <div class="container">
 
@@ -636,6 +660,8 @@
     applyLang();
     if(document.getElementById('screen-question').classList.contains('active')) renderQ();
     if(document.getElementById('screen-result').classList.contains('active')) {
+      // FIX: rebuild carousel so overlay names/series update to new language
+      buildCarousel();
       updateCharInfo(carouselIdx, false);
       renderScores();
     }
@@ -662,7 +688,6 @@
   }
 
   // ─── SERIES DATA ───
-  // genres: array of keys matching genreLabels
   const SERIES = [
     { th:'ตะวันระฟ้า',      en:'MY ONLY SUNSHINE THE SERIES', year:2026, genres:['romance','drama'] },
     { th:'พี่ว๊ากคะ รักหนูได้ไหม', en:'LOVE SENIOR THE SERIES', year:2023, genres:['romance','comedy','drama'] },
@@ -679,21 +704,15 @@
     { th:'เขตรักอันตราย',    en:'TIMEZONE',                     year:2026, genres:['romance','drama','comedy'] },
   ];
 
-  function getSeriesData(thName) {
-    return SERIES.find(s => s.th === thName) || null;
-  }
-
   function renderSeriesChips() {
     const grid = document.getElementById('series-grid');
     if(!grid) return;
-    const L = T();
     grid.innerHTML = SERIES.map(s =>
       `<span class="series-chip">${currentLang==='th' ? s.th : s.en}</span>`
     ).join('');
   }
 
   // ─── CHARACTER DATA ───
-  // name: {th, en}  |  series: th key (matched to SERIES)  |  actor: {th, en}
   const CHARACTERS = [
     // ── ตะวันระฟ้า / MY ONLY SUNSHINE ──
     { enneagram:8, type:'me',
@@ -954,15 +973,6 @@
       }, img:'IMG_4520.JPG' },
   ];
 
-  // Map: th series key → SERIES entry (for genre lookups)
-  // Also handle series name aliases
-  const SERIES_ALIAS = {
-    'โหวตให้หน่อย ผมไม่ค่อยกล้าเลือก': 'โหวตให้หน่อย ผมไม่ค่อยกล้าเลือก',
-    'วัยรุ่นวุ่นYรัก': 'วัยรุ่นวุ่นYรัก',
-    'สิ่งที่เหลืออยู่': 'สิ่งที่เหลืออยู่',
-    'เขตรักอันตราย': 'เขตรักอันตราย',
-  };
-
   function getSeriesInfo(thKey) {
     return SERIES.find(s => s.th === thKey) || null;
   }
@@ -1103,8 +1113,9 @@
     track.innerHTML = '';
     carouselChars.forEach((char, i) => {
       const card = document.createElement('div');
-      card.className = 'carousel-card' + (i !== 0 ? ' inactive' : '');
+      card.className = 'carousel-card' + (i !== carouselIdx ? ' inactive' : '');
       card.dataset.idx = i;
+      // FIX: use currentLang at render time so name/series update on language change
       const displayName = currentLang === 'th' ? char.name.th : char.name.en;
       const displaySeries = getSeriesDisplayName(char.series);
       let imgContent;
@@ -1130,15 +1141,19 @@
     if(carouselChars.length > 1) {
       carouselChars.forEach((_, i) => {
         const dot = document.createElement('div');
-        dot.className = 'carousel-dot' + (i===0 ? ' active' : '');
+        dot.className = 'carousel-dot' + (i===carouselIdx ? ' active' : '');
         dot.onclick = () => goToSlide(i);
         dotsEl.appendChild(dot);
       });
     }
-    const viewport = document.querySelector('.carousel-viewport');
-    viewport.addEventListener('touchstart', onTouchStart, {passive:true});
-    viewport.addEventListener('touchmove', onTouchMove, {passive:true});
-    viewport.addEventListener('touchend', onTouchEnd);
+    // Re-attach touch listeners (remove old ones first by cloning the viewport)
+    const oldViewport = document.querySelector('.carousel-viewport');
+    const newViewport = oldViewport.cloneNode(false);
+    newViewport.appendChild(track);
+    oldViewport.parentNode.replaceChild(newViewport, oldViewport);
+    newViewport.addEventListener('touchstart', onTouchStart, {passive:true});
+    newViewport.addEventListener('touchmove', onTouchMove, {passive:true});
+    newViewport.addEventListener('touchend', onTouchEnd);
     updateCarouselPosition(false);
     updateArrows();
   }
