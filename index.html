@@ -51,9 +51,9 @@
     .logo-small {
       display: flex; align-items: center; gap: 8px;
     }
+    /* Logo: NO filter — show original colors */
     .logo-small img {
       height: 32px; width: auto; object-fit: contain;
-      filter: invert(1) sepia(1) saturate(1.5) hue-rotate(5deg) brightness(1.1);
     }
     .logo-small .logo-text {
       font-family: 'Cinzel', serif;
@@ -89,13 +89,12 @@
     /* START */
     .start-hero { text-align: center; padding: 1rem 0 2.5rem; }
 
-    /* Logo large on start screen */
+    /* Logo large on start screen — original colors, no filter */
     .start-logo-wrap {
       display: flex; justify-content: center; margin-bottom: 1.5rem;
     }
     .start-logo-wrap img {
       height: 80px; width: auto; object-fit: contain;
-      filter: invert(1) sepia(1) saturate(1.5) hue-rotate(5deg) brightness(1.1);
     }
 
     .start-eyebrow {
@@ -234,7 +233,6 @@
     .btn-next:hover { background: var(--gold); color: var(--black); }
 
     /* ─── RESULT ─── */
-
     .carousel-section {
       margin-bottom: 1rem;
       position: relative;
@@ -275,7 +273,7 @@
     .carousel-img-wrap img {
       width: 100%; height: 100%;
       object-fit: cover;
-      object-position: center top; /* FIX: align top so face isn't cut */
+      object-position: center top;
       display: block;
     }
     .carousel-img-wrap .img-fallback {
@@ -365,6 +363,27 @@
     .char-series-line {
       font-size: 13px; color: var(--white-muted);
     }
+
+    /* Genre badges */
+    .genre-badges {
+      display: flex; flex-wrap: wrap; gap: 5px;
+      margin-top: 6px;
+    }
+    .genre-badge {
+      font-size: 10px; font-weight: 700;
+      padding: 3px 9px; border-radius: 20px;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      border: 1px solid rgba(229,209,146,0.3);
+      color: rgba(229,209,146,0.7);
+      background: rgba(229,209,146,0.07);
+    }
+    .genre-badge.romance { border-color: rgba(255,150,150,0.4); color: rgba(255,180,180,0.9); background: rgba(255,100,100,0.08); }
+    .genre-badge.comedy  { border-color: rgba(255,210,80,0.4);  color: rgba(255,220,100,0.9); background: rgba(255,200,0,0.08); }
+    .genre-badge.drama   { border-color: rgba(150,150,255,0.4); color: rgba(180,180,255,0.9); background: rgba(100,100,255,0.08); }
+    .genre-badge.supernatural { border-color: rgba(180,100,255,0.4); color: rgba(200,150,255,0.9); background: rgba(150,80,255,0.08); }
+    .genre-badge.mystery { border-color: rgba(100,200,200,0.4); color: rgba(130,220,220,0.9); background: rgba(80,180,180,0.08); }
+    .genre-badge.feelgood { border-color: rgba(100,220,150,0.4); color: rgba(130,230,170,0.9); background: rgba(80,200,120,0.08); }
+
     .type-badge {
       display: inline-block; padding: 5px 14px;
       border-radius: 20px; font-size: 11px; font-weight: 700;
@@ -428,10 +447,6 @@
       .q-text { font-size: 17px; }
       .stat-row { gap: 1.5rem; }
       .carousel-viewport { padding: 0 36px; margin: 0 -36px; }
-      .logo-small img {
-            filter: none !important;
-            mix-blend-mode: normal !important;
-            opacity: 1 !important;
     }
   </style>
 </head>
@@ -439,35 +454,21 @@
 <div class="app">
   <div class="container">
 
-    <!-- TOP BAR (shown on question + result screens) -->
-    <div class="top-bar" id="top-bar">
-      <div class="logo-small">
-        <img src="logo.png" alt="Star Hunter Logo" onerror="this.style.display='none'">
-        <div class="logo-text">Star Hunter <span>Quiz</span></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div class="lang-toggle">
-          <button class="lang-btn active" id="lang-th" onclick="setLang('th')">TH</button>
-          <button class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
-        </div>
-      </div>
-    </div>
-
     <!-- START SCREEN -->
     <div class="screen active" id="screen-start">
-       <div class="top-bar" id="top-bar">
-      <div class="logo-small">
-        <img src="logo.png" alt="Star Hunter Logo" onerror="this.style.display='none'">
-        <div class="logo-text">Star Hunter <span>Quiz</span></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div class="lang-toggle">
-          <button class="lang-btn active" id="lang-th" onclick="setLang('th')">TH</button>
-          <button class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
+      <div class="top-bar">
+        <div class="logo-small">
+          <img src="logo.png" alt="Star Hunter Logo" onerror="this.style.display='none'">
+          <div class="logo-text">Star Hunter <span>Quiz</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="lang-toggle">
+            <button class="lang-btn active" id="lang-th-start" onclick="setLang('th')">TH</button>
+            <button class="lang-btn" id="lang-en-start" onclick="setLang('en')">EN</button>
+          </div>
         </div>
       </div>
-    </div>
-      <!-- Logo large centered -->
+
       <div class="start-logo-wrap">
         <img src="logo.png" alt="Star Hunter Logo" onerror="this.style.display='none'">
       </div>
@@ -477,21 +478,7 @@
         <h1 class="start-title" id="txt-title">Star Hunter:<em> Profile</em><br><span id="txt-subtitle">เช็กโปรไฟล์ คุณเป็นสายไหนที่ซ่อนไว้?</span></h1>
         <div class="start-divider"></div>
         <p class="start-sub" id="txt-sub">ตอบ 8 คำถามสั้นๆ แล้วค้นหาว่าคุณมีบุคลิกตรงกับตัวละครใด ตามระบบนพลักษณ์ทั้ง 9 แบบ</p>
-        <div class="series-grid">
-          <span class="series-chip">ตะวันระฟ้า</span>
-          <span class="series-chip">รักรสนมจืด</span>
-          <span class="series-chip">เพียงชลาลัย</span>
-          <span class="series-chip">เฟื่องนคร</span>
-          <span class="series-chip">MY MATE MATCH</span>
-          <span class="series-chip">GEN Y THE SERIES</span>
-          <span class="series-chip">Remain</span>
-          <span class="series-chip">Timezone</span>
-          <span class="series-chip">มังกรกินใหญ่</span>
-          <span class="series-chip">รักวุ่นวาย นายรสแซ่บ</span>
-          <span class="series-chip">THE MOMENT... I NEED YOU</span>
-          <span class="series-chip">ข่มขลัง</span>
-          <span class="series-chip">พี่ว๊ากคะ รักหนูได้ไหม</span>
-        </div>
+        <div class="series-grid" id="series-grid"></div>
         <button class="btn-primary" onclick="startQuiz()" id="txt-btn-start">เริ่มเลย</button>
         <div class="stat-row">
           <div class="stat"><div class="stat-num">8</div><div class="stat-label" id="txt-stat-q">คำถาม</div></div>
@@ -503,6 +490,18 @@
 
     <!-- QUESTION SCREEN -->
     <div class="screen" id="screen-question">
+      <div class="top-bar">
+        <div class="logo-small">
+          <img src="logo.png" alt="Star Hunter Logo" onerror="this.style.display='none'">
+          <div class="logo-text">Star Hunter <span>Quiz</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="lang-toggle">
+            <button class="lang-btn active" id="lang-th-q" onclick="setLang('th')">TH</button>
+            <button class="lang-btn" id="lang-en-q" onclick="setLang('en')">EN</button>
+          </div>
+        </div>
+      </div>
       <div class="progress-wrap">
         <div class="progress-meta">
           <span id="q-label">คำถามที่ 1 จาก 8</span>
@@ -520,6 +519,18 @@
 
     <!-- RESULT SCREEN -->
     <div class="screen" id="screen-result">
+      <div class="top-bar">
+        <div class="logo-small">
+          <img src="logo.png" alt="Star Hunter Logo" onerror="this.style.display='none'">
+          <div class="logo-text">Star Hunter <span>Quiz</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="lang-toggle">
+            <button class="lang-btn active" id="lang-th-r" onclick="setLang('th')">TH</button>
+            <button class="lang-btn" id="lang-en-r" onclick="setLang('en')">EN</button>
+          </div>
+        </div>
+      </div>
 
       <div class="carousel-section">
         <div class="carousel-viewport">
@@ -538,6 +549,7 @@
             <div class="char-e-badge" id="ci-e"></div>
             <div class="char-big-name" id="ci-name"></div>
             <div class="char-series-line" id="ci-series"></div>
+            <div class="genre-badges" id="ci-genres"></div>
           </div>
           <span class="type-badge" id="ci-type"></span>
         </div>
@@ -579,7 +591,13 @@
       actorPrefix: 'รับบทโดย',
       scoreSuffix: ' คะแนน',
       typeME: 'เมะ', typeKE: 'เคะ',
+      seriesKey: 'th',
+      charNameKey: 'th',
       enames: {1:'นักสมบูรณ์แบบ',2:'ผู้ให้',3:'นักสำเร็จ',4:'นักโรแมนติก',5:'นักสังเกต',6:'ผู้ภักดี',7:'นักผจญภัย',8:'ผู้ท้าทาย',9:'ผู้สงบ'},
+      genreLabels: {
+        romance:'โรแมนติก', comedy:'คอมเมดี้', drama:'ดราม่า',
+        supernatural:'เหนือธรรมชาติ', mystery:'ลึกลับ', feelgood:'ฟิลกู๊ด'
+      }
     },
     en: {
       eyebrow: 'Character Quiz',
@@ -596,18 +614,27 @@
       actorPrefix: 'Played by',
       scoreSuffix: ' pts',
       typeME: 'Lead', typeKE: 'Support',
+      seriesKey: 'en',
+      charNameKey: 'en',
       enames: {1:'Perfectionist',2:'Helper',3:'Achiever',4:'Romantic',5:'Observer',6:'Loyalist',7:'Adventurer',8:'Challenger',9:'Peacemaker'},
+      genreLabels: {
+        romance:'Romance', comedy:'Comedy', drama:'Drama',
+        supernatural:'Supernatural', mystery:'Mystery', feelgood:'Feel-Good'
+      }
     }
   };
 
   function setLang(lang) {
     currentLang = lang;
-    document.getElementById('lang-th').classList.toggle('active', lang==='th');
-    document.getElementById('lang-en').classList.toggle('active', lang==='en');
+    // Update all lang toggles
+    ['start','q','r'].forEach(suffix => {
+      const th = document.getElementById(`lang-th-${suffix}`);
+      const en = document.getElementById(`lang-en-${suffix}`);
+      if(th) th.classList.toggle('active', lang==='th');
+      if(en) en.classList.toggle('active', lang==='en');
+    });
     applyLang();
-    // If question screen is active, re-render question
     if(document.getElementById('screen-question').classList.contains('active')) renderQ();
-    // If result screen is active, re-render result info
     if(document.getElementById('screen-result').classList.contains('active')) {
       updateCharInfo(carouselIdx, false);
       renderScores();
@@ -618,83 +645,335 @@
 
   function applyLang() {
     const L = T();
-    document.getElementById('txt-eyebrow').textContent = L.eyebrow;
-    document.getElementById('txt-subtitle').textContent = L.subtitle;
-    document.getElementById('txt-sub').textContent = L.sub;
-    document.getElementById('txt-btn-start').textContent = L.btnStart;
-    document.getElementById('txt-stat-q').textContent = L.statQ;
-    document.getElementById('txt-stat-c').textContent = L.statC;
-    document.getElementById('txt-stat-e').textContent = L.statE;
-    document.getElementById('txt-scores-label').textContent = L.scoresLabel;
-    document.getElementById('txt-btn-restart').textContent = L.btnRestart;
-    document.getElementById('txt-btn-share').textContent = L.btnShare;
+    const set = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+    set('txt-eyebrow', L.eyebrow);
+    set('txt-subtitle', L.subtitle);
+    set('txt-sub', L.sub);
+    set('txt-btn-start', L.btnStart);
+    set('txt-stat-q', L.statQ);
+    set('txt-stat-c', L.statC);
+    set('txt-stat-e', L.statE);
+    set('txt-scores-label', L.scoresLabel);
+    set('txt-btn-restart', L.btnRestart);
+    set('txt-btn-share', L.btnShare);
     const btnNext = document.getElementById('btn-next');
     if(btnNext) btnNext.textContent = L.btnNext;
+    renderSeriesChips();
   }
 
-  // ─── DATA ───
-  const CHARACTERS = [
-    { enneagram:1, type:'ke', name:'กิจ', series:'GEN Y THE SERIES', actor:'คอปเตอร์ ภานุวัฒน์',
-      desc:{th:'แสวงหาความสมบูรณ์แบบ มีกฎระเบียบอยู่เสมอ จะวิจารณ์สิ่งต่างๆ อย่างตรงไปตรงมา', en:'Strives for perfection, always follows rules, and gives direct, honest criticism.'}, img:'IMG_4507.JPG' },
-    { enneagram:2, type:'ke', name:'ซัน', series:'ตะวันระฟ้า', actor:'เมอซีเดส สิรภัทร',
-      desc:{th:'ชอบช่วยเหลือคนอื่น ให้ความสำคัญกับความสัมพันธ์ เห็นแก่ผู้อื่นมากกว่าตัวเอง', en:'Loves helping others, values relationships deeply, and puts others before themselves.'}, img:'ซัน.JPG' },
-    { enneagram:2, type:'ke', name:'ปุ่น', series:'รักวุ่นวาย นายรสแซ่บ', actor:'ปีเตอร์ ชลพัชร',
-      desc:{th:'ชอบช่วยเหลือคนอื่น ให้ความสำคัญกับความสัมพันธ์ เห็นแก่ผู้อื่นมากกว่าตัวเอง', en:'Loves helping others, values relationships deeply, and puts others before themselves.'}, img:'IMG_4500.JPG' },
-    { enneagram:2, type:'ke', name:'วายุ', series:'GEN Y THE SERIES', actor:'บาส สุรเดช',
-      desc:{th:'ชอบช่วยเหลือคนอื่น ให้ความสำคัญกับความสัมพันธ์ เห็นแก่ผู้อื่นมากกว่าตัวเอง', en:'Loves helping others, values relationships deeply, and puts others before themselves.'}, img:'IMG_4508.JPG' },
-    { enneagram:3, type:'me', name:'เฟื่องนคร/พี่เฟื่อง', series:'เฟื่องนคร', actor:'จ๊อบ กฤษ',
-      desc:{th:'ต้องการประสบความสำเร็จ มีเป้าหมายและต้องไปให้ถึง ชอบการแข่งขัน ให้ความสำคัญกับภาพลักษณ์', en:'Goal-driven and competitive, always striving for success and caring deeply about their image.'}, img:'IMG_4495.JPG' },
-    { enneagram:3, type:'ke', name:'ใหญ่', series:'มังกรกินใหญ่', actor:'แบงค์ มณฑป',
-      desc:{th:'ต้องการประสบความสำเร็จ มีเป้าหมายและต้องไปให้ถึง ชอบการแข่งขัน ให้ความสำคัญกับภาพลักษณ์', en:'Goal-driven and competitive, always striving for success and caring deeply about their image.'}, img:'IMG_4497.JPG' },
-    { enneagram:4, type:'me', name:'พระเอก', series:'รักรสนมจืด', actor:'ภู ภูรินท์',
-      desc:{th:'คนที่มีอารมณ์หลากหลายโดยเฉพาะอารมณ์เศร้า ไม่ค่อยพอใจในสิ่งที่มี อารมณ์เปลี่ยนแปลงง่าย', en:'Deeply emotional, often melancholic, rarely satisfied with what they have, and moods shift easily.'}, img:'ภูรินทร์ใล.JPG' },
-    { enneagram:4, type:'me', name:'หมอก', series:'THE MOMENT... I NEED YOU', actor:'แบงค์ ธนาธิป',
-      desc:{th:'คนที่มีอารมณ์หลากหลายโดยเฉพาะอารมณ์เศร้า ไม่ค่อยพอใจในสิ่งที่มี อารมณ์เปลี่ยนแปลงง่าย', en:'Deeply emotional, often melancholic, rarely satisfied with what they have, and moods shift easily.'}, img:'IMG_4512.JPG' },
-    { enneagram:4, type:'ke', name:'นาม', series:'Remain', actor:'ลูกแก้ว กมลลักษณ์',
-      desc:{th:'คนที่มีอารมณ์หลากหลายโดยเฉพาะอารมณ์เศร้า ไม่ค่อยพอใจในสิ่งที่มี อารมณ์เปลี่ยนแปลงง่าย', en:'Deeply emotional, often melancholic, rarely satisfied with what they have, and moods shift easily.'}, img:'IMG_4519.JPG' },
-    { enneagram:5, type:'me', name:'ธนู', series:'GEN Y THE SERIES', actor:'ดุล ร่มจำปา',
-      desc:{th:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', en:'Highly private, maintains emotional distance, and feels drained easily when around others.'}, img:'IMG_4506.JPG' },
-    { enneagram:5, type:'me', name:'ไทม์', series:'Timezone', actor:'',
-      desc:{th:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', en:'Highly private, maintains emotional distance, and feels drained easily when around others.'}, img:'333.jpg' },
-    { enneagram:5, type:'me', name:'ริว', series:'MY MATE MATCH', actor:'บิ๊ก ธนกร',
-      desc:{th:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', en:'Highly private, maintains emotional distance, and feels drained easily when around others.'}, img:'IMG_4502.JPG' },
-    { enneagram:5, type:'ke', name:'นมจืด', series:'รักรสนมจืด', actor:'นีล กวิศวร์',
-      desc:{th:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', en:'Highly private, maintains emotional distance, and feels drained easily when around others.'}, img:'นีล.JPG' },
-    { enneagram:5, type:'ke', name:'แม่ครูบุหลัน', series:'ข่มขลัง', actor:'บิ๊นท์ สิรีธร',
-      desc:{th:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น', en:'Highly private, maintains emotional distance, and feels drained easily when around others.'}, img:'666.jpg' },
-    { enneagram:6, type:'me', name:'หมวดภีม', series:'ข่มขลัง', actor:'ปุยนุ่น วรางค์ศิริ',
-      desc:{th:'คนที่มีคำถามกับสิ่งรอบตัว กล้าได้กล้าเสีย เตรียมตัวพร้อมรับมือกับสิ่งที่อาจคุกคามได้ตลอดเวลา', en:'Questions everything around them, takes bold risks, and is always prepared for potential threats.'}, img:'222.jpg' },
-    { enneagram:7, type:'me', name:'มะนาว', series:'พี่ว๊ากคะ รักหนูได้ไหม', actor:'อันดา อนันตา',
-      desc:{th:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', en:'Optimistic, cheerful, and fun-loving — always chasing new experiences and standing out from the crowd.'}, img:'มะนาว.JPG' },
-    { enneagram:7, type:'me', name:'มิกซ์', series:'MY MATE MATCH', actor:'เจมส์ กษม',
-      desc:{th:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', en:'Optimistic, cheerful, and fun-loving — always chasing new experiences and standing out from the crowd.'}, img:'IMG_4501.JPG' },
-    { enneagram:7, type:'me', name:'มาร์ค', series:'GEN Y THE SERIES', actor:'คิมม่อน วโรดม',
-      desc:{th:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', en:'Optimistic, cheerful, and fun-loving — always chasing new experiences and standing out from the crowd.'}, img:'IMG_4509.JPG' },
-    { enneagram:7, type:'ke', name:'เบ', series:'THE MOMENT... I NEED YOU', actor:'ภณ ธนภณ',
-      desc:{th:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', en:'Optimistic, cheerful, and fun-loving — always chasing new experiences and standing out from the crowd.'}, img:'IMG_4513.JPG' },
-    { enneagram:7, type:'ke', name:'โซน', series:'Timezone', actor:'อามัส พีรวัส',
-      desc:{th:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร', en:'Optimistic, cheerful, and fun-loving — always chasing new experiences and standing out from the crowd.'}, img:'IMG_4520.JPG' },
-    { enneagram:8, type:'me', name:'ระฟ้า/พี่ฟรินท์', series:'ตะวันระฟ้า', actor:'อะตอม อภิชญา',
-      desc:{th:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', en:'Values control and power, quick to anger but quick to forgive, protective of the weak, and deeply just — sometimes to a fault.'}, img:'ระฟ้า.JPG' },
-    { enneagram:8, type:'me', name:'ซัน', series:'เพียงชลาลัย', actor:'มอส ภาณุวัฒน์',
-      desc:{th:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', en:'Values control and power, quick to anger but quick to forgive, protective of the weak, and deeply just — sometimes to a fault.'}, img:'IMG_4493.JPG' },
-    { enneagram:8, type:'me', name:'มังกร', series:'มังกรกินใหญ่', actor:'มอส ภาณุวัฒน์',
-      desc:{th:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', en:'Values control and power, quick to anger but quick to forgive, protective of the weak, and deeply just — sometimes to a fault.'}, img:'IMG_4498.JPG' },
-    { enneagram:8, type:'me', name:'อธิป', series:'รักวุ่นวาย นายรสแซ่บ', actor:'บอส ธวัชนินทร์',
-      desc:{th:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', en:'Values control and power, quick to anger but quick to forgive, protective of the weak, and deeply just — sometimes to a fault.'}, img:'IMG_4499.JPG' },
-    { enneagram:8, type:'ke', name:'เกี๊ยวซ่า', series:'พี่ว๊ากคะ รักหนูได้ไหม', actor:'ลูกแก้ว กมลลักษณ์',
-      desc:{th:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว', en:'Values control and power, quick to anger but quick to forgive, protective of the weak, and deeply just — sometimes to a fault.'}, img:'ลูกแก้ว.JPG' },
-    { enneagram:9, type:'me', name:'เต', series:'Remain', actor:'อันดา อนันตา',
-      desc:{th:'ชอบความสงบ สามัคคี ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง', en:'Loves peace and harmony, avoids conflict, understands many perspectives, and often forgets their own needs by going along with others.'}, img:'IMG_4518.JPG' },
-    { enneagram:9, type:'ke', name:'สลิน/หนูลิน', series:'เพียงชลาลัย', actor:'แบงค์ มณฑป',
-      desc:{th:'ชอบความสงบ สามัคคี ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง', en:'Loves peace and harmony, avoids conflict, understands many perspectives, and often forgets their own needs by going along with others.'}, img:'IMG_4494.JPG' },
-    { enneagram:9, type:'ke', name:'กรม/กรมท่า', series:'เฟื่องนคร', actor:'พอร์ช ศิฑา',
-      desc:{th:'ชอบความสงบ สามัคคี ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง', en:'Loves peace and harmony, avoids conflict, understands many perspectives, and often forgets their own needs by going along with others.'}, img:'IMG_4496.JPG' },
-    { enneagram:9, type:'ke', name:'แมทช์', series:'MY MATE MATCH', actor:'เจ็ท เจษฎากร',
-      desc:{th:'ชอบความสงบ สามัคคี ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง', en:'Loves peace and harmony, avoids conflict, understands many perspectives, and often forgets their own needs by going along with others.'}, img:'IMG_4503.JPG' },
+  // ─── SERIES DATA ───
+  // genres: array of keys matching genreLabels
+  const SERIES = [
+    { th:'ตะวันระฟ้า',      en:'MY ONLY SUNSHINE THE SERIES', year:2026, genres:['romance','drama'] },
+    { th:'พี่ว๊ากคะ รักหนูได้ไหม', en:'LOVE SENIOR THE SERIES', year:2023, genres:['romance','comedy','drama'] },
+    { th:'รักรสนมจืด',       en:'FLIRT MILK THE SERIES',        year:2025, genres:['romance','comedy'] },
+    { th:'เพียงชลาลัย',      en:'SUNSET X VIBES',               year:2024, genres:['romance','drama'] },
+    { th:'เฟื่องนคร',        en:'CITY OF STARS',                year:2024, genres:['romance','feelgood','comedy'] },
+    { th:'มังกรกินใหญ่',     en:'BIG DRAGON THE SERIES',        year:2022, genres:['romance','drama'] },
+    { th:'รักวุ่นวาย นายรสแซ่บ', en:'WHAT ZEBB MAN',           year:2022, genres:['romance','comedy'] },
+    { th:'โหวตให้หน่อย ผมไม่ค่อยกล้าเลือก', en:'MY MATE MATCH', year:2021, genres:['romance','comedy'] },
+    { th:'วัยรุ่นวุ่นYรัก',  en:'GEN Y THE SERIES',             year:2020, genres:['romance','comedy'] },
+    { th:'THE MOMENT... I NEED YOU', en:'THE MOMENT... I NEED YOU', year:2020, genres:['romance','comedy'] },
+    { th:'ข่มขลัง',          en:'KHOM KHLANG',                  year:2026, genres:['romance','drama','supernatural','mystery'] },
+    { th:'สิ่งที่เหลืออยู่', en:'Remain',                       year:null, genres:['romance','drama'] },
+    { th:'เขตรักอันตราย',    en:'Timezone',                     year:2026, genres:['romance','drama','comedy'] },
   ];
 
-  // 8 questions, each with TH and EN text
+  function getSeriesData(thName) {
+    return SERIES.find(s => s.th === thName) || null;
+  }
+
+  function renderSeriesChips() {
+    const grid = document.getElementById('series-grid');
+    if(!grid) return;
+    const L = T();
+    grid.innerHTML = SERIES.map(s =>
+      `<span class="series-chip">${currentLang==='th' ? s.th : s.en}</span>`
+    ).join('');
+  }
+
+  // ─── CHARACTER DATA ───
+  // name: {th, en}  |  series: th key (matched to SERIES)  |  actor: {th, en}
+  const CHARACTERS = [
+    // ── ตะวันระฟ้า / MY ONLY SUNSHINE ──
+    { enneagram:8, type:'me',
+      name:{th:'ระฟ้า', en:'RAFHA'},
+      series:'ตะวันระฟ้า',
+      actor:{th:'อะตอม อภิชญา', en:'ATOM APICHAYA'},
+      desc:{
+        th:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว',
+        en:'Values control and power, quick to anger but quick to forgive, protective of the weak, and deeply just — sometimes to a fault.'
+      }, img:'ระฟ้า.JPG' },
+    { enneagram:2, type:'ke',
+      name:{th:'ซัน', en:'SUN'},
+      series:'ตะวันระฟ้า',
+      actor:{th:'เมอซีเดส สิรภัทร', en:'MERCEDES SIRAPAT'},
+      desc:{
+        th:'ชอบช่วยเหลือคนอื่น ให้ความสำคัญกับความสัมพันธ์ เห็นแก่ผู้อื่นมากกว่าตัวเอง',
+        en:'Loves helping others, values relationships deeply, and puts others before themselves.'
+      }, img:'ซัน.JPG' },
+
+    // ── พี่ว๊ากคะ / LOVE SENIOR ──
+    { enneagram:7, type:'me',
+      name:{th:'มะนาว', en:'MANAOW'},
+      series:'พี่ว๊ากคะ รักหนูได้ไหม',
+      actor:{th:'อันดา อนันตา', en:'ANDA ANANTA'},
+      desc:{
+        th:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร',
+        en:'Optimistic, cheerful, and fun-loving — always chasing new experiences and standing out from the crowd.'
+      }, img:'มะนาว.JPG' },
+    { enneagram:8, type:'ke',
+      name:{th:'เกี๊ยวซ่า', en:'GYOZA'},
+      series:'พี่ว๊ากคะ รักหนูได้ไหม',
+      actor:{th:'ลูกแก้ว กมลลักษณ์', en:'LOOKKAEW KAMONLAK'},
+      desc:{
+        th:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว',
+        en:'Values control and power, quick to anger but quick to forgive, protective of the weak, and deeply just — sometimes to a fault.'
+      }, img:'ลูกแก้ว.JPG' },
+
+    // ── รักรสนมจืด / FLIRT MILK ──
+    { enneagram:4, type:'me',
+      name:{th:'พระเอก', en:'PHRA EK'},
+      series:'รักรสนมจืด',
+      actor:{th:'ภู ภูรินท์', en:'PHU PHURIN'},
+      desc:{
+        th:'คนที่มีอารมณ์หลากหลายโดยเฉพาะอารมณ์เศร้า ไม่ค่อยพอใจในสิ่งที่มี อารมณ์เปลี่ยนแปลงง่าย',
+        en:'Deeply emotional, often melancholic, rarely satisfied with what they have, and moods shift easily.'
+      }, img:'ภูรินทร์ใล.JPG' },
+    { enneagram:5, type:'ke',
+      name:{th:'นมจืด', en:'NOM JUED'},
+      series:'รักรสนมจืด',
+      actor:{th:'นีล กวิศวร์', en:'NEIL KAWISORN'},
+      desc:{
+        th:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น',
+        en:'Highly private, maintains emotional distance, and feels drained easily when around others.'
+      }, img:'นีล.JPG' },
+
+    // ── เพียงชลาลัย / SUNSET X VIBES ──
+    { enneagram:8, type:'me',
+      name:{th:'ซัน', en:'SUN'},
+      series:'เพียงชลาลัย',
+      actor:{th:'มอส ภาณุวัฒน์', en:'MOS PHANUWAT'},
+      desc:{
+        th:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว',
+        en:'Values control and power, quick to anger but quick to forgive, protective of the weak, and deeply just — sometimes to a fault.'
+      }, img:'IMG_4493.JPG' },
+    { enneagram:9, type:'ke',
+      name:{th:'สลิน', en:'SALIN'},
+      series:'เพียงชลาลัย',
+      actor:{th:'แบงค์ มณฑป', en:'BANK MONDOP'},
+      desc:{
+        th:'ชอบความสงบ สามัคคี ชอบช่วยเหลือคนอื่น ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง',
+        en:'Loves peace and harmony, avoids conflict, understands many perspectives, and often forgets their own needs by going along with others.'
+      }, img:'IMG_4494.JPG' },
+
+    // ── เฟื่องนคร / CITY OF STARS ──
+    { enneagram:3, type:'me',
+      name:{th:'เฟื่องนคร', en:'FUEANG NAKHON'},
+      series:'เฟื่องนคร',
+      actor:{th:'จ๊อบ กฤษ', en:'JOB KRIS'},
+      desc:{
+        th:'ต้องการประสบความสำเร็จ มีเป้าหมายและต้องไปให้ถึง ชอบการแข่งขัน ให้ความสำคัญกับภาพลักษณ์',
+        en:'Goal-driven and competitive, always striving for success and caring deeply about their image.'
+      }, img:'IMG_4495.JPG' },
+    { enneagram:9, type:'ke',
+      name:{th:'กรม', en:'KROMTHA'},
+      series:'เฟื่องนคร',
+      actor:{th:'พอร์ช ศิฑา', en:'PORSCHE SITHA'},
+      desc:{
+        th:'ชอบความสงบ สามัคคี ชอบช่วยเหลือคนอื่น ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง',
+        en:'Loves peace and harmony, avoids conflict, understands many perspectives, and often forgets their own needs by going along with others.'
+      }, img:'IMG_4496.JPG' },
+
+    // ── มังกรกินใหญ่ / BIG DRAGON ──
+    { enneagram:8, type:'me',
+      name:{th:'มังกร', en:'MANGKON'},
+      series:'มังกรกินใหญ่',
+      actor:{th:'มอส ภาณุวัฒน์', en:'MOS PHANUWAT'},
+      desc:{
+        th:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว',
+        en:'Values control and power, quick to anger but quick to forgive, protective of the weak, and deeply just — sometimes to a fault.'
+      }, img:'IMG_4498.JPG' },
+    { enneagram:3, type:'ke',
+      name:{th:'ใหญ่', en:'YAI'},
+      series:'มังกรกินใหญ่',
+      actor:{th:'แบงค์ มณฑป', en:'BANK MONDOP'},
+      desc:{
+        th:'ต้องการประสบความสำเร็จ มีเป้าหมายและต้องไปให้ถึง ชอบการแข่งขัน ให้ความสำคัญกับภาพลักษณ์',
+        en:'Goal-driven and competitive, always striving for success and caring deeply about their image.'
+      }, img:'IMG_4497.JPG' },
+
+    // ── รักวุ่นวาย / WHAT ZEBB MAN ──
+    { enneagram:8, type:'me',
+      name:{th:'อธิป', en:'ATHIP'},
+      series:'รักวุ่นวาย นายรสแซ่บ',
+      actor:{th:'บอส ธวัชนินทร์', en:'BOSS THAWATCHANIN'},
+      desc:{
+        th:'ให้ความสำคัญกับการควบคุมและอำนาจ โกรธง่ายหายเร็ว ปกป้องผู้อ่อนแอ มีความยุติธรรม แต่บางครั้งก็เกินตัว',
+        en:'Values control and power, quick to anger but quick to forgive, protective of the weak, and deeply just — sometimes to a fault.'
+      }, img:'IMG_4499.JPG' },
+    { enneagram:2, type:'ke',
+      name:{th:'ปุ่น', en:'POON'},
+      series:'รักวุ่นวาย นายรสแซ่บ',
+      actor:{th:'ปีเตอร์ ชลพัชร', en:'PETER CHONLAPACH'},
+      desc:{
+        th:'ชอบช่วยเหลือคนอื่น ให้ความสำคัญกับความสัมพันธ์ เห็นแก่ผู้อื่นมากกว่าตัวเอง',
+        en:'Loves helping others, values relationships deeply, and puts others before themselves.'
+      }, img:'IMG_4500.JPG' },
+
+    // ── MY MATE MATCH ──
+    { enneagram:7, type:'me',
+      name:{th:'มิกซ์', en:'MIX'},
+      series:'โหวตให้หน่อย ผมไม่ค่อยกล้าเลือก',
+      actor:{th:'เจมส์ กษม', en:'JAMES KASEM'},
+      desc:{
+        th:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร',
+        en:'Optimistic, cheerful, and fun-loving — always chasing new experiences and standing out from the crowd.'
+      }, img:'IMG_4501.JPG' },
+    { enneagram:5, type:'me',
+      name:{th:'ริว', en:'RYU'},
+      series:'โหวตให้หน่อย ผมไม่ค่อยกล้าเลือก',
+      actor:{th:'บิ๊ก ธนกร', en:'BIG THANAKORN'},
+      desc:{
+        th:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น',
+        en:'Highly private, maintains emotional distance, and feels drained easily when around others.'
+      }, img:'IMG_4502.JPG' },
+    { enneagram:9, type:'ke',
+      name:{th:'แมทช์', en:'MATCH'},
+      series:'โหวตให้หน่อย ผมไม่ค่อยกล้าเลือก',
+      actor:{th:'เจ็ท เจษฎากร', en:'JET JETSADAKORN'},
+      desc:{
+        th:'ชอบความสงบ สามัคคี ชอบช่วยเหลือคนอื่น ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง',
+        en:'Loves peace and harmony, avoids conflict, understands many perspectives, and often forgets their own needs by going along with others.'
+      }, img:'IMG_4503.JPG' },
+
+    // ── GEN Y ──
+    { enneagram:5, type:'me',
+      name:{th:'ธนู', en:'THANU'},
+      series:'วัยรุ่นวุ่นYรัก',
+      actor:{th:'ดุล ร่มจำปา', en:'DUN ROMCHAMPA'},
+      desc:{
+        th:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น',
+        en:'Highly private, maintains emotional distance, and feels drained easily when around others.'
+      }, img:'IMG_4506.JPG' },
+    { enneagram:7, type:'me',
+      name:{th:'มาร์ค', en:'MARK'},
+      series:'วัยรุ่นวุ่นYรัก',
+      actor:{th:'คิมม่อน วโรดม', en:'KIMMON WARODOM'},
+      desc:{
+        th:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร',
+        en:'Optimistic, cheerful, and fun-loving — always chasing new experiences and standing out from the crowd.'
+      }, img:'IMG_4509.JPG' },
+    { enneagram:2, type:'ke',
+      name:{th:'วายุ', en:'WAYU'},
+      series:'วัยรุ่นวุ่นYรัก',
+      actor:{th:'บาส สุรเดช', en:'BAS SURADET'},
+      desc:{
+        th:'ชอบช่วยเหลือคนอื่น ให้ความสำคัญกับความสัมพันธ์ เห็นแก่ผู้อื่นมากกว่าตัวเอง',
+        en:'Loves helping others, values relationships deeply, and puts others before themselves.'
+      }, img:'IMG_4508.JPG' },
+    { enneagram:1, type:'ke',
+      name:{th:'กิจ', en:'KIT'},
+      series:'วัยรุ่นวุ่นYรัก',
+      actor:{th:'คอปเตอร์ ภานุวัฒน์', en:'COPTER PANUWA'},
+      desc:{
+        th:'แสวงหาความสมบูรณ์แบบ มีกฎระเบียบอยู่เสมอ จะวิจารณ์สิ่งต่างๆ อย่างตรงไปตรงมา',
+        en:'Strives for perfection, always follows rules, and gives direct, honest criticism.'
+      }, img:'IMG_4507.JPG' },
+
+    // ── THE MOMENT ──
+    { enneagram:4, type:'me',
+      name:{th:'หมอก', en:'MOK'},
+      series:'THE MOMENT... I NEED YOU',
+      actor:{th:'แบงค์ ธนาธิป', en:'BANK THANATHIP'},
+      desc:{
+        th:'คนที่มีอารมณ์หลากหลายโดยเฉพาะอารมณ์เศร้า ไม่ค่อยพอใจในสิ่งที่มี อารมณ์เปลี่ยนแปลงง่าย',
+        en:'Deeply emotional, often melancholic, rarely satisfied with what they have, and moods shift easily.'
+      }, img:'IMG_4512.JPG' },
+    { enneagram:7, type:'ke',
+      name:{th:'เบ', en:'BAY'},
+      series:'THE MOMENT... I NEED YOU',
+      actor:{th:'ภณ ธนภณ', en:'POL THANAPON'},
+      desc:{
+        th:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร',
+        en:'Optimistic, cheerful, and fun-loving — always chasing new experiences and standing out from the crowd.'
+      }, img:'IMG_4513.JPG' },
+
+    // ── ข่มขลัง / KHOM KHLANG ──
+    { enneagram:6, type:'me',
+      name:{th:'หมวดภีม', en:'PHEEM'},
+      series:'ข่มขลัง',
+      actor:{th:'ปุยนุ่น วรางค์ศิริ', en:'PUINOON WARANGSIRIVARD'},
+      desc:{
+        th:'คนที่มีคำถามกับสิ่งรอบตัว กล้าได้กล้าเสีย เตรียมตัวพร้อมรับมือกับสิ่งที่อาจคุกคามได้ตลอดเวลา',
+        en:'Questions everything around them, takes bold risks, and is always prepared for potential threats.'
+      }, img:'222.jpg' },
+    { enneagram:5, type:'ke',
+      name:{th:'แม่ครูบุหลัน', en:'BULUN'},
+      series:'ข่มขลัง',
+      actor:{th:'บิ๊นท์ สิรีธร', en:'BINT SIREETHORN'},
+      desc:{
+        th:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น',
+        en:'Highly private, maintains emotional distance, and feels drained easily when around others.'
+      }, img:'666.jpg' },
+
+    // ── Remain / สิ่งที่เหลืออยู่ ──
+    { enneagram:9, type:'me',
+      name:{th:'เต', en:'TAE'},
+      series:'สิ่งที่เหลืออยู่',
+      actor:{th:'อันดา อนันตา', en:'ANDA ANANTA'},
+      desc:{
+        th:'ชอบความสงบ สามัคคี ชอบช่วยเหลือคนอื่น ไม่ชอบความขัดแย้ง เข้าใจผู้คนในมุมมองต่างๆ ชอบทำตามคนอื่นและหลงลืมความต้องการของตัวเอง',
+        en:'Loves peace and harmony, avoids conflict, understands many perspectives, and often forgets their own needs by going along with others.'
+      }, img:'IMG_4518.JPG' },
+    { enneagram:4, type:'ke',
+      name:{th:'นาม', en:'NAM'},
+      series:'สิ่งที่เหลืออยู่',
+      actor:{th:'ลูกแก้ว กมลลักษณ์', en:'LOOKKAEW KAMOLLAK'},
+      desc:{
+        th:'คนที่มีอารมณ์หลากหลายโดยเฉพาะอารมณ์เศร้า ไม่ค่อยพอใจในสิ่งที่มี อารมณ์เปลี่ยนแปลงง่าย',
+        en:'Deeply emotional, often melancholic, rarely satisfied with what they have, and moods shift easily.'
+      }, img:'IMG_4519.JPG' },
+
+    // ── Timezone / เขตรักอันตราย ──
+    { enneagram:5, type:'me',
+      name:{th:'ไทม์', en:'TIME'},
+      series:'เขตรักอันตราย',
+      actor:{th:'', en:''},
+      desc:{
+        th:'ต้องการความเป็นส่วนตัวสูง มักมีระยะห่างระหว่างตัวเองกับคนอื่น รู้สึกหมดพลังได้ง่ายเมื่ออยู่กับคนอื่น',
+        en:'Highly private, maintains emotional distance, and feels drained easily when around others.'
+      }, img:'333.jpg' },
+    { enneagram:7, type:'ke',
+      name:{th:'โซน', en:'ZONE'},
+      series:'เขตรักอันตราย',
+      actor:{th:'อามัส พีรวัส', en:'AMUS PIOPOOM'},
+      desc:{
+        th:'มองโลกในแง่ดี ร่าเริง สนุกสนาน ชอบอะไรใหม่ๆ ชอบสิ่งที่ไม่เหมือนใคร',
+        en:'Optimistic, cheerful, and fun-loving — always chasing new experiences and standing out from the crowd.'
+      }, img:'IMG_4520.JPG' },
+  ];
+
+  // Map: th series key → SERIES entry (for genre lookups)
+  // Also handle series name aliases
+  const SERIES_ALIAS = {
+    'โหวตให้หน่อย ผมไม่ค่อยกล้าเลือก': 'โหวตให้หน่อย ผมไม่ค่อยกล้าเลือก',
+    'วัยรุ่นวุ่นYรัก': 'วัยรุ่นวุ่นYรัก',
+    'สิ่งที่เหลืออยู่': 'สิ่งที่เหลืออยู่',
+    'เขตรักอันตราย': 'เขตรักอันตราย',
+  };
+
+  function getSeriesInfo(thKey) {
+    return SERIES.find(s => s.th === thKey) || null;
+  }
+
+  function getSeriesDisplayName(thKey) {
+    const s = getSeriesInfo(thKey);
+    if(!s) return thKey;
+    return currentLang === 'th' ? s.th : s.en;
+  }
+
+  // ─── QUESTIONS ───
   const QUESTIONS = [
     { text:{th:"ตอนที่ต้องเผชิญปัญหาหรือสิ่งยากๆ คุณมักจะทำอะไรก่อนเลย?", en:"When facing a problem or something difficult, what do you usually do first?"}, choices:[
       { text:{th:"นั่งคิดคนเดียวก่อน แยกแยะให้ชัดแล้วค่อยทำ", en:"Think alone first, break it down clearly before acting"}, scores:{5:3,1:1} },
@@ -747,8 +1026,6 @@
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo(0, 0);
-    // Top bar: hide on start screen
-    document.getElementById('top-bar').style.display = id === 'screen-start' ? 'none' : '';
   }
 
   function startQuiz() {
@@ -828,18 +1105,20 @@
       const card = document.createElement('div');
       card.className = 'carousel-card' + (i !== 0 ? ' inactive' : '');
       card.dataset.idx = i;
+      const displayName = currentLang === 'th' ? char.name.th : char.name.en;
+      const displaySeries = getSeriesDisplayName(char.series);
       let imgContent;
       if(char.img) {
-        imgContent = `<img src="${char.img}" alt="${char.name}" onerror="this.parentElement.innerHTML='<div class=\\'img-fallback\\'>${char.name[0]}</div>'">`;
+        imgContent = `<img src="${char.img}" alt="${displayName}" onerror="this.parentElement.innerHTML='<div class=\\'img-fallback\\'>${displayName[0]}</div>'">`;
       } else {
-        imgContent = `<div class="img-fallback">${char.name[0]}</div>`;
+        imgContent = `<div class="img-fallback">${displayName[0]}</div>`;
       }
       card.innerHTML = `
         <div class="carousel-img-wrap">
           ${imgContent}
           <div class="carousel-name-overlay">
-            <div class="cn-series">${char.series}</div>
-            <div class="cn-name">${char.name}</div>
+            <div class="cn-series">${displaySeries}</div>
+            <div class="cn-name">${displayName}</div>
           </div>
         </div>
       `;
@@ -911,6 +1190,16 @@
   function carouselPrev() { goToSlide(carouselIdx - 1); }
   function carouselNext() { goToSlide(carouselIdx + 1); }
 
+  function buildGenreBadges(seriesThKey) {
+    const sData = getSeriesInfo(seriesThKey);
+    if(!sData || !sData.genres) return '';
+    const L = T();
+    return sData.genres.map(g => {
+      const label = L.genreLabels[g] || g;
+      return `<span class="genre-badge ${g}">${label}</span>`;
+    }).join('');
+  }
+
   function updateCharInfo(idx, animated) {
     const char = carouselChars[idx];
     const card = document.getElementById('char-info-card');
@@ -919,15 +1208,17 @@
     const doUpdate = () => {
       const topE = char.enneagram;
       document.getElementById('ci-e').textContent = `E${topE} — ${L.enames[topE]}`;
-      document.getElementById('ci-name').textContent = char.name;
-      document.getElementById('ci-series').textContent = char.series;
+      document.getElementById('ci-name').textContent = currentLang === 'th' ? char.name.th : char.name.en;
+      document.getElementById('ci-series').textContent = getSeriesDisplayName(char.series);
+      document.getElementById('ci-genres').innerHTML = buildGenreBadges(char.series);
       const typeBadge = document.getElementById('ci-type');
       typeBadge.textContent = char.type === 'me' ? L.typeME : L.typeKE;
       typeBadge.className = 'type-badge ' + (char.type === 'me' ? 'type-me' : 'type-ke');
       document.getElementById('ci-desc').textContent = char.desc[currentLang];
       const actorEl = document.getElementById('ci-actor');
-      actorEl.innerHTML = char.actor ? `${L.actorPrefix} <strong>${char.actor}</strong>` : '';
-      actorEl.style.display = char.actor ? '' : 'none';
+      const actorName = currentLang === 'th' ? char.actor.th : char.actor.en;
+      actorEl.innerHTML = actorName ? `${L.actorPrefix} <strong>${actorName}</strong>` : '';
+      actorEl.style.display = actorName ? '' : 'none';
     };
 
     if(animated) {
@@ -962,19 +1253,20 @@
 
   function shareResult() {
     if(!lastResult) return;
-    const L = T();
+    const charName = currentLang === 'th' ? lastResult.name.th : lastResult.name.en;
+    const seriesName = getSeriesDisplayName(lastResult.series);
     const text = currentLang === 'th'
-      ? `ฉันทำ SH Series Quiz ได้เป็น "${lastResult.name}" จาก "${lastResult.series}" (E${lastResult.enneagram} — ${lastResult.type==='me'?'พระเอก':'ตัวละครคู่'})`
-      : `I took the SH Series Quiz and got "${lastResult.name}" from "${lastResult.series}" (E${lastResult.enneagram} — ${lastResult.type==='me'?'Lead':'Support'})`;
+      ? `ฉันทำ Star Hunter Quiz ได้เป็น "${charName}" จาก "${seriesName}" (E${lastResult.enneagram} — ${lastResult.type==='me'?'เมะ':'เคะ'})`
+      : `I took the Star Hunter Quiz and got "${charName}" from "${seriesName}" (E${lastResult.enneagram} — ${lastResult.type==='me'?'Lead':'Support'})`;
     if(navigator.share) {
-      navigator.share({ title: 'SH Series Quiz', text });
+      navigator.share({ title: 'Star Hunter Quiz', text });
     } else if(navigator.clipboard) {
       navigator.clipboard.writeText(text).then(() => alert(currentLang==='th' ? 'คัดลอกผลลัพธ์แล้ว!' : 'Result copied!'));
     }
   }
 
-  // Init: hide top bar on start
-  document.getElementById('top-bar').style.display = 'none';
+  // Init
+  renderSeriesChips();
 </script>
 </body>
 </html>
