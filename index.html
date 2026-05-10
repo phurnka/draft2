@@ -91,10 +91,10 @@
 
     /* Logo large on start screen — original colors, no filter */
     .start-logo-wrap {
-      display: flex; justify-content: center; margin-bottom: 1.5rem;
+      display: flex; justify-content: center; margin-bottom: 1rem;
     }
     .start-logo-wrap img {
-      height: 80px; width: auto; object-fit: contain;
+      height: 100px; width: auto; object-fit: contain;
     }
 
     .start-eyebrow {
@@ -613,7 +613,7 @@
       btnShare: 'Share Result',
       actorPrefix: 'Played by',
       scoreSuffix: ' pts',
-      typeME: 'Lead', typeKE: 'Support',
+      typeME: 'TOP', typeKE: 'BOTTOM',
       seriesKey: 'en',
       charNameKey: 'en',
       enames: {1:'Perfectionist',2:'Helper',3:'Achiever',4:'Romantic',5:'Observer',6:'Loyalist',7:'Adventurer',8:'Challenger',9:'Peacemaker'},
@@ -675,8 +675,8 @@
     { th:'วัยรุ่นวุ่นYรัก',  en:'GEN Y THE SERIES',             year:2020, genres:['romance','comedy'] },
     { th:'THE MOMENT... I NEED YOU', en:'THE MOMENT... I NEED YOU', year:2020, genres:['romance','comedy'] },
     { th:'ข่มขลัง',          en:'KHOM KHLANG',                  year:2026, genres:['romance','drama','supernatural','mystery'] },
-    { th:'สิ่งที่เหลืออยู่', en:'Remain',                       year:null, genres:['romance','drama'] },
-    { th:'เขตรักอันตราย',    en:'Timezone',                     year:2026, genres:['romance','drama','comedy'] },
+    { th:'สิ่งที่เหลืออยู่', en:'REMIAN',                       year:null, genres:['romance','drama'] },
+    { th:'เขตรักอันตราย',    en:'TIMEZONE',                     year:2026, genres:['romance','drama','comedy'] },
   ];
 
   function getSeriesData(thName) {
@@ -777,7 +777,7 @@
         en:'Goal-driven and competitive, always striving for success and caring deeply about their image.'
       }, img:'IMG_4495.JPG' },
     { enneagram:9, type:'ke',
-      name:{th:'กรม', en:'KROMTHA'},
+      name:{th:'กรม', en:'KROM'},
       series:'เฟื่องนคร',
       actor:{th:'พอร์ช ศิฑา', en:'PORSCHE SITHA'},
       desc:{
