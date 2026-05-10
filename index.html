@@ -451,6 +451,18 @@
 
     <!-- START SCREEN -->
     <div class="screen active" id="screen-start">
+       <div class="top-bar" id="top-bar">
+      <div class="logo-small">
+        <img src="logo.png" alt="Star Hunter Logo" onerror="this.style.display='none'">
+        <div class="logo-text">Star Hunter <span>Quiz</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="lang-toggle">
+          <button class="lang-btn active" id="lang-th" onclick="setLang('th')">TH</button>
+          <button class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
+        </div>
+      </div>
+    </div>
       <!-- Logo large centered -->
       <div class="start-logo-wrap">
         <img src="logo.png" alt="Star Hunter Logo" onerror="this.style.display='none'">
