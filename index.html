@@ -44,13 +44,9 @@
 
     /* WATERMARK FOOTER */
     .watermark-footer {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      z-index: 100;
       text-align: center;
-      padding: 8px 0 10px;
-      pointer-events: none;
-      background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+      padding: 2rem 0 1.5rem;
+      margin-top: 1rem;
     }
     .watermark-footer span {
       font-family: 'Cinzel', serif;
@@ -469,11 +465,6 @@
 </head>
 <body>
 
-<!-- WATERMARK FOOTER — fixed, shown on all screens -->
-<div class="watermark-footer">
-  <span>Developed by RPA Team: Raya | Phurn | Ari</span>
-</div>
-
 <div class="app">
   <div class="container">
 
@@ -592,6 +583,12 @@
     </div>
 
   </div>
+
+  </div>
+</div>
+
+<div class="watermark-footer">
+  <span>Developed by RPA Team: Raya | Phurn | Ari</span>
 </div>
 
 <script>
@@ -649,7 +646,6 @@
 
   function setLang(lang) {
     currentLang = lang;
-    // Update all lang toggles
     ['start','q','r'].forEach(suffix => {
       const th = document.getElementById(`lang-th-${suffix}`);
       const en = document.getElementById(`lang-en-${suffix}`);
@@ -659,7 +655,6 @@
     applyLang();
     if(document.getElementById('screen-question').classList.contains('active')) renderQ();
     if(document.getElementById('screen-result').classList.contains('active')) {
-      // FIX: rebuild carousel so overlay names/series update to new language
       buildCarousel();
       updateCharInfo(carouselIdx, false);
       renderScores();
@@ -733,7 +728,7 @@
 
     // ── พี่ว๊ากคะ / LOVE SENIOR ──
     { enneagram:7, type:'me',
-      name:{th:'มะนาว', en:'MANAOW'},
+      name:{th:'มะนาว', en:'MANAO'},
       series:'พี่ว๊ากคะ รักหนูได้ไหม',
       actor:{th:'อันดา อนันตา', en:'ANDA ANANTA'},
       desc:{
@@ -1114,7 +1109,6 @@
       const card = document.createElement('div');
       card.className = 'carousel-card' + (i !== carouselIdx ? ' inactive' : '');
       card.dataset.idx = i;
-      // FIX: use currentLang at render time so name/series update on language change
       const displayName = currentLang === 'th' ? char.name.th : char.name.en;
       const displaySeries = getSeriesDisplayName(char.series);
       let imgContent;
@@ -1145,7 +1139,6 @@
         dotsEl.appendChild(dot);
       });
     }
-    // Re-attach touch listeners (remove old ones first by cloning the viewport)
     const oldViewport = document.querySelector('.carousel-viewport');
     const newViewport = oldViewport.cloneNode(false);
     newViewport.appendChild(track);
